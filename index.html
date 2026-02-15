@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium ride-share platform connecting commuters for seamless urban travel">
+    <title>Travel Connect | Premium Urban Mobility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Grand+Hotel&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Left Sidebar Navigation -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-header">
+                <h1 class="app-logo">Travel Connect</h1>
+            </div>
+
+            <div class="sidebar-menu">
+                <button class="sidebar-nav-item active" data-tab="home" aria-label="Home">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    <span class="nav-text">Home</span>
+                </button>
+
+
+                <button class="sidebar-nav-item" data-tab="chat" aria-label="Chat">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span class="nav-text">Chat</span>
+                </button>
+
+                <button class="sidebar-nav-item" data-tab="post" aria-label="Post">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                    <span class="nav-text">+ Post</span>
+                </button>
+
+                <button class="sidebar-nav-item" data-tab="account" aria-label="Account">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span class="nav-text">Account</span>
+                </button>
+
+                <button class="sidebar-nav-item" data-tab="history" aria-label="History">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span class="nav-text">History</span>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="nav-icon-btn notification-btn" aria-label="Notifications">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    <span class="notification-badge"></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- HOME PAGE -->
+            <div class="page-container active" id="page-home">
+                <!-- Route Search Bar -->
+                <div class="route-search-section">
+                    <div class="route-search-bar" id="routeSearchBar">
+                        <div class="route-search-sweep"></div>
+                        <div class="route-input-group">
+                            <svg class="route-input-icon from-icon" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="4" />
+                                <circle cx="12" cy="12" r="9" opacity="0.3" />
+                            </svg>
+                            <input type="text" class="route-input" id="routeFromInput" placeholder="From where?" />
+                        </div>
+                        <button class="route-swap-btn" id="routeSwapBtn" aria-label="Swap locations">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M7 4v16" />
+                                <path d="M3 8l4-4 4 4" />
+                                <path d="M17 20V4" />
+                                <path d="M13 16l4 4 4-4" />
+                            </svg>
+                        </button>
+                        <div class="route-input-group">
+                            <svg class="route-input-icon to-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <input type="text" class="route-input" id="routeToInput" placeholder="To where?" />
+                        </div>
+                        <button class="route-search-btn" id="routeSearchBtn" aria-label="Search routes">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feed Container -->
+                <main class="feed-container">
+                    <div class="feed-scroll">
+                        <!-- Post Card 1 -->
+                        <article class="post-card" data-animate="pop-in">
+                            <div class="glass-overlay"></div>
+                            <header class="post-header">
+                                <div class="avatar-container">
+                                    <div class="avatar">AM</div>
+                                </div>
+                                <div class="user-info">
+                                    <span class="user-name">Arjun Mehta</span>
+                                </div>
+                            </header>
+                            <div class="route-strip">
+                                <div class="route-point start">
+                                    <svg class="start-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                    </svg>
+                                    <span>Powai</span>
+                                </div>
+                                <div class="route-track">
+                                    <div class="track-line"></div>
+                                    <div class="moving-vehicle bike-icon paused">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="5" cy="17" r="3" />
+                                            <circle cx="19" cy="17" r="3" />
+                                            <path d="M12 17V5l4 4" />
+                                            <path d="M8 17h4" />
+                                            <path d="M16 17l-4-8" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="route-point end">
+                                    <svg class="end-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                    </svg>
+                                    <span>BKC</span>
+                                </div>
+                            </div>
+                            <div class="transport-section single-mode">
+                                <div class="mode-display">
+                                    <div class="mode-icon-badge bike">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="5.5" cy="17.5" r="3.5" />
+                                            <circle cx="18.5" cy="17.5" r="3.5" />
+                                            <path
+                                                d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                                        </svg>
+                                        <span>Bike Ride</span>
+                                    </div>
+                                </div>
+                                <div class="transport-footer">
+                                    <div class="price-badge">
+                                        <span class="currency">₹</span>
+                                        <span class="amount">45</span>
+                                    </div>
+                                    <div class="register-wrapper">
+                                        <div class="register-line"></div>
+                                        <button class="register-btn">
+                                            <span class="btn-text register-text">Register</span>
+                                            <span class="btn-text registered-text">Registered</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Post Card 2 -->
+                        <article class="post-card" data-animate="pop-in">
+                            <div class="glass-overlay"></div>
+                            <header class="post-header">
+                                <div class="avatar-container">
+                                    <div class="avatar">PS</div>
+                                </div>
+                                <div class="user-info">
+                                    <span class="user-name">Priya Sharma</span>
+                                </div>
+                            </header>
+                            <div class="route-strip">
+                                <div class="route-point start">
+                                    <svg class="start-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                    </svg>
+                                    <span>Andheri</span>
+                                </div>
+                                <div class="route-track">
+                                    <div class="track-line"></div>
+                                    <div class="moving-vehicle car-icon paused">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <path d="M5 17h14v-5l-2-4H7l-2 4v5z" />
+                                            <circle cx="7.5" cy="17" r="1.5" />
+                                            <circle cx="16.5" cy="17" r="1.5" />
+                                            <path d="M5 12h14" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="route-point end">
+                                    <svg class="end-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                    </svg>
+                                    <span>Lower Parel</span>
+                                </div>
+                            </div>
+                            <div class="transport-section single-mode">
+                                <div class="mode-display">
+                                    <div class="mode-icon-badge car">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="8" width="18" height="10" rx="2" />
+                                            <circle cx="7" cy="18" r="2" />
+                                            <circle cx="17" cy="18" r="2" />
+                                            <path d="M5 8l2-4h10l2 4" />
+                                        </svg>
+                                        <span>Car Ride</span>
+                                    </div>
+                                </div>
+                                <div class="transport-footer">
+                                    <div class="price-badge">
+                                        <span class="currency">₹</span>
+                                        <span class="amount">180</span>
+                                    </div>
+                                    <div class="register-wrapper">
+                                        <div class="register-line"></div>
+                                        <button class="register-btn">
+                                            <span class="btn-text register-text">Register</span>
+                                            <span class="btn-text registered-text">Registered</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Post Card 3 -->
+                        <article class="post-card" data-animate="pop-in">
+                            <div class="glass-overlay"></div>
+                            <header class="post-header">
+                                <div class="avatar-container">
+                                    <div class="avatar">RK</div>
+                                </div>
+                                <div class="user-info">
+                                    <span class="user-name">Rohan Kapoor</span>
+                                </div>
+                            </header>
+                            <div class="route-strip">
+                                <div class="route-point start">
+                                    <svg class="start-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                    </svg>
+                                    <span>Thane</span>
+                                </div>
+                                <div class="route-track">
+                                    <div class="track-line"></div>
+                                    <div class="moving-vehicle car-icon paused">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <path d="M5 17h14v-5l-2-4H7l-2 4v5z" />
+                                            <circle cx="7.5" cy="17" r="1.5" />
+                                            <circle cx="16.5" cy="17" r="1.5" />
+                                            <path d="M5 12h14" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="route-point end">
+                                    <svg class="end-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                    </svg>
+                                    <span>Nariman Point</span>
+                                </div>
+                            </div>
+                            <div class="transport-section single-mode">
+                                <div class="mode-display">
+                                    <div class="mode-icon-badge car">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="8" width="18" height="10" rx="2" />
+                                            <circle cx="7" cy="18" r="2" />
+                                            <circle cx="17" cy="18" r="2" />
+                                            <path d="M5 8l2-4h10l2 4" />
+                                        </svg>
+                                        <span>Car Ride</span>
+                                    </div>
+                                </div>
+                                <div class="transport-footer">
+                                    <div class="price-badge">
+                                        <span class="currency">₹</span>
+                                        <span class="amount">250</span>
+                                    </div>
+                                    <div class="register-wrapper">
+                                        <div class="register-line"></div>
+                                        <button class="register-btn">
+                                            <span class="btn-text register-text">Register</span>
+                                            <span class="btn-text registered-text">Registered</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </main>
+            </div>
+
+            <!-- CHAT PAGE - Instagram DM Style Two-Panel -->
+            <div class="page-container" id="page-chat">
+                <div class="chat-layout">
+                    <!-- Left Panel - Inbox -->
+                    <div class="chat-inbox">
+                        <div class="inbox-header">
+                            <h2>Messages</h2>
+                            <button class="new-chat-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="inbox-search">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                            <input type="text" placeholder="Search messages" />
+                        </div>
+                        <div class="inbox-list">
+                            <div class="inbox-item active" data-chat="arjun">
+                                <div class="inbox-avatar">AM</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Arjun Mehta</span>
+                                    <span class="inbox-preview">See you at 9 AM tomorrow!</span>
+                                </div>
+                                <span class="inbox-time">2m</span>
+                            </div>
+                            <div class="inbox-item" data-chat="priya">
+                                <div class="inbox-avatar">PS</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Priya Sharma</span>
+                                    <span class="inbox-preview">Thanks for the ride today 🚗</span>
+                                </div>
+                                <span class="inbox-time">1h</span>
+                            </div>
+                            <div class="inbox-item" data-chat="rohan">
+                                <div class="inbox-avatar">RK</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Rohan Kapoor</span>
+                                    <span class="inbox-preview">Can we reschedule to Thursday?</span>
+                                </div>
+                                <span class="inbox-time">3h</span>
+                            </div>
+                            <div class="inbox-item unread" data-chat="neha">
+                                <div class="inbox-avatar">NK</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Neha Kulkarni</span>
+                                    <span class="inbox-preview">I'll be waiting at the usual spot</span>
+                                </div>
+                                <span class="inbox-time">5h</span>
+                                <span class="inbox-badge">2</span>
+                            </div>
+                            <div class="inbox-item" data-chat="vikram">
+                                <div class="inbox-avatar">VR</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Vikram Rao</span>
+                                    <span class="inbox-preview">Great driving today!</span>
+                                </div>
+                                <span class="inbox-time">1d</span>
+                            </div>
+                            <div class="inbox-item" data-chat="ananya">
+                                <div class="inbox-avatar">AS</div>
+                                <div class="inbox-info">
+                                    <span class="inbox-name">Ananya Singh</span>
+                                    <span class="inbox-preview">Let me know when you reach</span>
+                                </div>
+                                <span class="inbox-time">2d</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel - Chat Window -->
+                    <div class="chat-window">
+                        <div class="chat-header">
+                            <div class="chat-user">
+                                <div class="chat-user-avatar">AM</div>
+                                <div class="chat-user-info">
+                                    <span class="chat-user-name">Arjun Mehta</span>
+                                    <span class="chat-user-status">Active now</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message-date-separator"><span>Today</span></div>
+                            <div class="message received">
+                                <div class="message-bubble">Hey! Are we still on for tomorrow's ride to BKC?</div>
+                                <span class="message-time">9:30 AM</span>
+                            </div>
+                            <div class="message sent">
+                                <div class="message-bubble">Yes, absolutely! I'll pick you up at 8:30 AM</div>
+                                <span class="message-time">9:32 AM</span>
+                            </div>
+                            <div class="message received">
+                                <div class="message-bubble">Perfect! Should I wait at the usual spot near the metro
+                                    station?</div>
+                                <span class="message-time">9:33 AM</span>
+                            </div>
+                            <div class="message sent">
+                                <div class="message-bubble">Yes, same place as last time. I'll be in the white Honda
+                                    City</div>
+                                <span class="message-time">9:35 AM</span>
+                            </div>
+                            <div class="message received">
+                                <div class="message-bubble">Great! How much should I transfer for the ride?</div>
+                                <span class="message-time">9:36 AM</span>
+                            </div>
+                            <div class="message sent">
+                                <div class="message-bubble">It's ₹45 for the bike ride, but since we're doing car
+                                    pooling with 2 more people, it'll be just ₹35 per person 👍</div>
+                                <span class="message-time">9:38 AM</span>
+                            </div>
+                            <div class="message received">
+                                <div class="message-bubble">That's a good deal! I'll pay you in the morning</div>
+                                <span class="message-time">9:40 AM</span>
+                            </div>
+                            <div class="message sent">
+                                <div class="message-bubble">No worries! You can also pay via UPI if that's easier</div>
+                                <span class="message-time">9:41 AM</span>
+                            </div>
+                            <div class="message received">
+                                <div class="message-bubble">See you at 9 AM tomorrow!</div>
+                                <span class="message-time">9:42 AM</span>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <button class="input-action-btn" aria-label="Emoji" title="Emoji">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                    <line x1="9" y1="9" x2="9.01" y2="9" />
+                                    <line x1="15" y1="9" x2="15.01" y2="9" />
+                                </svg>
+                            </button>
+                            <input type="text" placeholder="Message..." id="messageInput" />
+                            <button class="send-btn" id="sendBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCOUNT PAGE -->
+            <div class="page-container" id="page-account">
+                <div class="page-content">
+                    <div class="account-header">
+                        <div class="account-avatar">YK</div>
+                        <div class="account-info">
+                            <h2 class="account-name">Yogiraj Kulkarni</h2>
+                            <p class="account-email">yogiraj@example.com</p>
+                        </div>
+                    </div>
+                    <div class="account-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">42</span>
+                            <span class="stat-label">Rides</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">₹3.2K</span>
+                            <span class="stat-label">Saved</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">4.9</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                    </div>
+                    <div class="account-menu">
+                        <div class="menu-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span>Edit Profile</span>
+                        </div>
+                        <div class="menu-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                <line x1="1" y1="10" x2="23" y2="10" />
+                            </svg>
+                            <span>Payment Methods</span>
+                        </div>
+                        <div class="menu-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            <span>Privacy & Security</span>
+                        </div>
+                        <div class="menu-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                            <span>Settings</span>
+                        </div>
+                        <div class="menu-item logout">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
+                            <span>Log Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST CREATION PAGE -->
+            <div class="page-container" id="page-post">
+                <div class="post-create-page">
+                    <!-- Step 1: Create Form -->
+                    <div class="post-step post-step-create active" id="postStepCreate">
+                        <div class="post-form-container">
+                            <h2 class="post-form-title">Create New Ride Post</h2>
+
+                            <!-- User Info (Fixed - Non-editable) -->
+                            <div class="post-user-info">
+                                <div class="post-user-avatar">YK</div>
+                                <div class="post-user-details">
+                                    <span class="post-user-name">Yogiraj Kulkarni</span>
+                                    <span class="post-user-handle">Posting as yourself</span>
+                                </div>
+                            </div>
+
+                            <!-- Form Fields -->
+                            <div class="post-form">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e"
+                                            stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="#22c55e" />
+                                        </svg>
+                                        Start Location
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="postPickup" placeholder="Enter pickup location..."
+                                            class="form-input" />
+                                        <span class="input-error" id="pickupError">Only letters and spaces
+                                            allowed</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444"
+                                            stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="#ef4444" />
+                                        </svg>
+                                        Destination
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="postDestination" placeholder="Enter destination..."
+                                            class="form-input" />
+                                        <span class="input-error" id="destinationError">Only letters and spaces
+                                            allowed</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M5 17h14v-5l-2-4H7l-2 4v5z" />
+                                            <circle cx="7.5" cy="17" r="1.5" />
+                                            <circle cx="16.5" cy="17" r="1.5" />
+                                        </svg>
+                                        Vehicle Type
+                                    </label>
+                                    <div class="vehicle-selector">
+                                        <button type="button" class="vehicle-option active" data-vehicle="bike">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <circle cx="5.5" cy="17.5" r="3.5" />
+                                                <circle cx="18.5" cy="17.5" r="3.5" />
+                                                <path
+                                                    d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                                            </svg>
+                                            <span>Bike</span>
+                                        </button>
+                                        <button type="button" class="vehicle-option" data-vehicle="car">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="8" width="18" height="10" rx="2" />
+                                                <circle cx="7" cy="18" r="2" />
+                                                <circle cx="17" cy="18" r="2" />
+                                                <path d="M5 8l2-4h10l2 4" />
+                                            </svg>
+                                            <span>Car</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="1" x2="12" y2="23" />
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                        </svg>
+                                        Price (₹)
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <div class="price-input-group">
+                                            <span class="price-symbol">₹</span>
+                                            <input type="text" id="postPrice" placeholder="Enter price..."
+                                                class="form-input price-input" />
+                                        </div>
+                                        <span class="input-error" id="priceError">Only whole numbers allowed</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="post-form-actions">
+                                <button type="button" class="post-btn secondary" id="postCancelBtn">Cancel</button>
+                                <button type="button" class="post-btn primary" id="postPreviewBtn">Preview Post</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Preview -->
+                    <div class="post-step post-step-preview" id="postStepPreview">
+                        <div class="preview-container">
+                            <h2 class="preview-title">Preview Your Post</h2>
+
+                            <!-- Preview Card -->
+                            <div class="preview-card-wrapper">
+                                <article class="post-card preview-post" id="previewPostCard">
+                                    <div class="glass-overlay"></div>
+                                    <header class="post-header">
+                                        <div class="avatar-container">
+                                            <div class="avatar">YK</div>
+                                        </div>
+                                        <div class="user-info">
+                                            <span class="user-name">Yogiraj Kulkarni</span>
+                                        </div>
+                                    </header>
+                                    <div class="route-strip">
+                                        <div class="route-point start">
+                                            <svg class="start-icon" width="20" height="20" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                            </svg>
+                                            <span id="previewPickup">Pickup</span>
+                                        </div>
+                                        <div class="route-track">
+                                            <div class="track-line"></div>
+                                            <div class="moving-vehicle bike-icon" id="previewVehicleIcon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="1.5">
+                                                    <circle cx="5" cy="17" r="3" />
+                                                    <circle cx="19" cy="17" r="3" />
+                                                    <path d="M12 17V5l4 4" />
+                                                    <path d="M8 17h4" />
+                                                    <path d="M16 17l-4-8" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="route-point end">
+                                            <svg class="end-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                            </svg>
+                                            <span id="previewDestination">Destination</span>
+                                        </div>
+                                    </div>
+                                    <div class="transport-section single-mode">
+                                        <div class="mode-display">
+                                            <div class="mode-icon-badge bike" id="previewVehicleBadge">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <circle cx="5.5" cy="17.5" r="3.5" />
+                                                    <circle cx="18.5" cy="17.5" r="3.5" />
+                                                    <path
+                                                        d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                                                </svg>
+                                                <span id="previewVehicleLabel">Bike Ride</span>
+                                            </div>
+                                        </div>
+                                        <div class="transport-footer">
+                                            <div class="price-badge">
+                                                <span class="currency">₹</span>
+                                                <span class="amount" id="previewPrice">0</span>
+                                            </div>
+                                            <div class="register-wrapper">
+                                                <div class="register-line"></div>
+                                                <button class="register-btn">
+                                                    <span class="btn-text register-text">Register</span>
+                                                    <span class="btn-text registered-text">Registered</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+
+                            <!-- Preview Actions -->
+                            <div class="preview-actions">
+                                <button type="button" class="post-btn secondary" id="previewEditBtn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                    Edit
+                                </button>
+                                <button type="button" class="post-btn danger" id="previewCancelBtn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                    Cancel
+                                </button>
+                                <button type="button" class="post-btn primary publish" id="publishPostBtn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M22 2L11 13" />
+                                        <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                                    </svg>
+                                    Publish Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTORY PAGE -->
+            <div class="page-container" id="page-history">
+                <div class="history-page">
+                    <div class="history-header">
+                        <h2 class="history-title">Ride History</h2>
+                        <span class="history-count">5 rides</span>
+                    </div>
+
+                    <div class="history-list">
+                        <!-- Ride 1 -->
+                        <div class="history-card" data-ride-id="TC-240212-0901">
+                            <div class="history-card-collapsed">
+                                <div class="history-date">
+                                    <span class="history-date-day">12 Feb 2026</span>
+                                    <span class="history-date-time">09:00 AM – 09:45 AM</span>
+                                </div>
+                                <div class="history-route-strip">
+                                    <div class="route-point start">
+                                        <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                        </svg>
+                                        <span>Powai</span>
+                                    </div>
+                                    <div class="route-track">
+                                        <div class="track-line"></div>
+                                    </div>
+                                    <div class="route-point end">
+                                        <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                        </svg>
+                                        <span>BKC</span>
+                                    </div>
+                                </div>
+                                <div class="history-meta">
+                                    <div class="mode-icon-badge bike">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="5.5" cy="17.5" r="3.5" />
+                                            <circle cx="18.5" cy="17.5" r="3.5" />
+                                            <path
+                                                d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                                        </svg>
+                                        <span>Shared Bike</span>
+                                    </div>
+                                    <span class="history-fare">₹90</span>
+                                </div>
+                                <div class="history-expand-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="history-card-expanded">
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Co-Traveler</h4>
+                                    <div class="cotraveler-info">
+                                        <div class="cotraveler-avatar">RS</div>
+                                        <div class="cotraveler-details">
+                                            <span class="cotraveler-name">Rahul Sharma</span>
+                                            <span class="cotraveler-meta">Met via Travel Connect</span>
+                                            <div class="cotraveler-rating">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24">
+                                                    <path
+                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                                <span>4.7</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Driver</h4>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Name</span>
+                                        <span class="driver-value">Arjun Mehta</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Vehicle</span>
+                                        <span class="driver-value">Honda City</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Number</span>
+                                        <span class="driver-value">MH12 AB ****</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Fare Breakdown</h4>
+                                    <div class="fare-row">
+                                        <span>Total Paid</span>
+                                        <span class="fare-value">₹90</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Your Split</span>
+                                        <span class="fare-value highlight">₹45</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Payment</span>
+                                        <span class="fare-value">UPI</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Ride Metrics</h4>
+                                    <div class="metrics-row">
+                                        <div class="metric">
+                                            <span class="metric-value">12.4 km</span>
+                                            <span class="metric-label">Distance</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value">45 min</span>
+                                            <span class="metric-label">Duration</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value status-completed">Completed</span>
+                                            <span class="metric-label">Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section safety-section">
+                                    <div class="ride-id">Ride ID: TC-240212-0901</div>
+                                    <div class="safety-actions">
+                                        <button class="safety-btn">Report Issue</button>
+                                        <button class="safety-btn">Download Receipt</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ride 2 -->
+                        <div class="history-card" data-ride-id="TC-240211-1430">
+                            <div class="history-card-collapsed">
+                                <div class="history-date">
+                                    <span class="history-date-day">11 Feb 2026</span>
+                                    <span class="history-date-time">02:30 PM – 03:25 PM</span>
+                                </div>
+                                <div class="history-route-strip">
+                                    <div class="route-point start">
+                                        <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                        </svg>
+                                        <span>Andheri</span>
+                                    </div>
+                                    <div class="route-track">
+                                        <div class="track-line"></div>
+                                    </div>
+                                    <div class="route-point end">
+                                        <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                        </svg>
+                                        <span>Lower Parel</span>
+                                    </div>
+                                </div>
+                                <div class="history-meta">
+                                    <div class="mode-icon-badge car">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="8" width="18" height="10" rx="2" />
+                                            <circle cx="7" cy="18" r="2" />
+                                            <circle cx="17" cy="18" r="2" />
+                                            <path d="M5 8l2-4h10l2 4" />
+                                        </svg>
+                                        <span>Shared Car</span>
+                                    </div>
+                                    <span class="history-fare">₹180</span>
+                                </div>
+                                <div class="history-expand-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="history-card-expanded">
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Co-Traveler</h4>
+                                    <div class="cotraveler-info">
+                                        <div class="cotraveler-avatar">PS</div>
+                                        <div class="cotraveler-details">
+                                            <span class="cotraveler-name">Priya Sharma</span>
+                                            <span class="cotraveler-meta">Met via Travel Connect</span>
+                                            <div class="cotraveler-rating">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24">
+                                                    <path
+                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                                <span>4.9</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Driver</h4>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Name</span>
+                                        <span class="driver-value">Vikram Rao</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Vehicle</span>
+                                        <span class="driver-value">Maruti Swift</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Number</span>
+                                        <span class="driver-value">MH04 CD ****</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Fare Breakdown</h4>
+                                    <div class="fare-row">
+                                        <span>Total Paid</span>
+                                        <span class="fare-value">₹180</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Your Split</span>
+                                        <span class="fare-value highlight">₹90</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Payment</span>
+                                        <span class="fare-value">UPI</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Ride Metrics</h4>
+                                    <div class="metrics-row">
+                                        <div class="metric">
+                                            <span class="metric-value">18.2 km</span>
+                                            <span class="metric-label">Distance</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value">55 min</span>
+                                            <span class="metric-label">Duration</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value status-completed">Completed</span>
+                                            <span class="metric-label">Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section safety-section">
+                                    <div class="ride-id">Ride ID: TC-240211-1430</div>
+                                    <div class="safety-actions">
+                                        <button class="safety-btn">Report Issue</button>
+                                        <button class="safety-btn">Download Receipt</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ride 3 -->
+                        <div class="history-card" data-ride-id="TC-240210-0815">
+                            <div class="history-card-collapsed">
+                                <div class="history-date">
+                                    <span class="history-date-day">10 Feb 2026</span>
+                                    <span class="history-date-time">08:15 AM – 09:30 AM</span>
+                                </div>
+                                <div class="history-route-strip">
+                                    <div class="route-point start">
+                                        <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                        </svg>
+                                        <span>Thane</span>
+                                    </div>
+                                    <div class="route-track">
+                                        <div class="track-line"></div>
+                                    </div>
+                                    <div class="route-point end">
+                                        <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                        </svg>
+                                        <span>Nariman Point</span>
+                                    </div>
+                                </div>
+                                <div class="history-meta">
+                                    <div class="mode-icon-badge car">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="8" width="18" height="10" rx="2" />
+                                            <circle cx="7" cy="18" r="2" />
+                                            <circle cx="17" cy="18" r="2" />
+                                            <path d="M5 8l2-4h10l2 4" />
+                                        </svg>
+                                        <span>Shared Car</span>
+                                    </div>
+                                    <span class="history-fare">₹250</span>
+                                </div>
+                                <div class="history-expand-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="history-card-expanded">
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Co-Traveler</h4>
+                                    <div class="cotraveler-info">
+                                        <div class="cotraveler-avatar">RK</div>
+                                        <div class="cotraveler-details">
+                                            <span class="cotraveler-name">Rohan Kapoor</span>
+                                            <span class="cotraveler-meta">Met via Travel Connect</span>
+                                            <div class="cotraveler-rating">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24">
+                                                    <path
+                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                                <span>4.5</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Driver</h4>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Name</span>
+                                        <span class="driver-value">Sanjay Patil</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Vehicle</span>
+                                        <span class="driver-value">Hyundai Verna</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Number</span>
+                                        <span class="driver-value">MH01 EF ****</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Fare Breakdown</h4>
+                                    <div class="fare-row">
+                                        <span>Total Paid</span>
+                                        <span class="fare-value">₹250</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Your Split</span>
+                                        <span class="fare-value highlight">₹125</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Payment</span>
+                                        <span class="fare-value">Card</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Ride Metrics</h4>
+                                    <div class="metrics-row">
+                                        <div class="metric">
+                                            <span class="metric-value">34.6 km</span>
+                                            <span class="metric-label">Distance</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value">1h 15m</span>
+                                            <span class="metric-label">Duration</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value status-completed">Completed</span>
+                                            <span class="metric-label">Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section safety-section">
+                                    <div class="ride-id">Ride ID: TC-240210-0815</div>
+                                    <div class="safety-actions">
+                                        <button class="safety-btn">Report Issue</button>
+                                        <button class="safety-btn">Download Receipt</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ride 4 (Cancelled) -->
+                        <div class="history-card cancelled" data-ride-id="TC-240209-1800">
+                            <div class="history-card-collapsed">
+                                <div class="history-date">
+                                    <span class="history-date-day">09 Feb 2026</span>
+                                    <span class="history-date-time">06:00 PM – Cancelled</span>
+                                </div>
+                                <div class="history-route-strip">
+                                    <div class="route-point start">
+                                        <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                        </svg>
+                                        <span>Bandra</span>
+                                    </div>
+                                    <div class="route-track">
+                                        <div class="track-line"></div>
+                                    </div>
+                                    <div class="route-point end">
+                                        <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                        </svg>
+                                        <span>Worli</span>
+                                    </div>
+                                </div>
+                                <div class="history-meta">
+                                    <div class="mode-icon-badge car">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="8" width="18" height="10" rx="2" />
+                                            <circle cx="7" cy="18" r="2" />
+                                            <circle cx="17" cy="18" r="2" />
+                                            <path d="M5 8l2-4h10l2 4" />
+                                        </svg>
+                                        <span>Shared Car</span>
+                                    </div>
+                                    <span class="history-fare">₹120</span>
+                                </div>
+                                <div class="history-expand-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="history-card-expanded">
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Co-Traveler</h4>
+                                    <div class="cotraveler-info">
+                                        <div class="cotraveler-avatar">NK</div>
+                                        <div class="cotraveler-details">
+                                            <span class="cotraveler-name">Neha Kulkarni</span>
+                                            <span class="cotraveler-meta">Met via Travel Connect</span>
+                                            <div class="cotraveler-rating">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24">
+                                                    <path
+                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                                <span>4.8</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Driver</h4>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Name</span>
+                                        <span class="driver-value">Amit Desai</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Vehicle</span>
+                                        <span class="driver-value">Tata Nexon</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Number</span>
+                                        <span class="driver-value">MH02 GH ****</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Fare Details</h4>
+                                    <div class="fare-row">
+                                        <span>Total Amount</span>
+                                        <span class="fare-value">₹120</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Refunded</span>
+                                        <span class="fare-value highlight">₹60</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Payment</span>
+                                        <span class="fare-value">UPI</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Ride Metrics</h4>
+                                    <div class="metrics-row">
+                                        <div class="metric">
+                                            <span class="metric-value">—</span>
+                                            <span class="metric-label">Distance</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value">—</span>
+                                            <span class="metric-label">Duration</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value status-cancelled">Cancelled</span>
+                                            <span class="metric-label">Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section safety-section">
+                                    <div class="ride-id">Ride ID: TC-240209-1800</div>
+                                    <div class="safety-actions">
+                                        <button class="safety-btn">Report Issue</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ride 5 -->
+                        <div class="history-card" data-ride-id="TC-240208-0730">
+                            <div class="history-card-collapsed">
+                                <div class="history-date">
+                                    <span class="history-date-day">08 Feb 2026</span>
+                                    <span class="history-date-time">07:30 AM – 08:20 AM</span>
+                                </div>
+                                <div class="history-route-strip">
+                                    <div class="route-point start">
+                                        <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="4" fill="currentColor" />
+                                        </svg>
+                                        <span>Vashi</span>
+                                    </div>
+                                    <div class="route-track">
+                                        <div class="track-line"></div>
+                                    </div>
+                                    <div class="route-point end">
+                                        <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                        </svg>
+                                        <span>BKC</span>
+                                    </div>
+                                </div>
+                                <div class="history-meta">
+                                    <div class="mode-icon-badge bike">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="5.5" cy="17.5" r="3.5" />
+                                            <circle cx="18.5" cy="17.5" r="3.5" />
+                                            <path
+                                                d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                                        </svg>
+                                        <span>Shared Bike</span>
+                                    </div>
+                                    <span class="history-fare">₹150</span>
+                                </div>
+                                <div class="history-expand-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="history-card-expanded">
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Co-Traveler</h4>
+                                    <div class="cotraveler-info">
+                                        <div class="cotraveler-avatar">AS</div>
+                                        <div class="cotraveler-details">
+                                            <span class="cotraveler-name">Ananya Singh</span>
+                                            <span class="cotraveler-meta">Met via Travel Connect</span>
+                                            <div class="cotraveler-rating">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24">
+                                                    <path
+                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                                </svg>
+                                                <span>4.6</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Driver</h4>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Name</span>
+                                        <span class="driver-value">Kiran Joshi</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Vehicle</span>
+                                        <span class="driver-value">Maruti Ertiga</span>
+                                    </div>
+                                    <div class="driver-info-row">
+                                        <span class="driver-label">Number</span>
+                                        <span class="driver-value">MH03 IJ ****</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Fare Breakdown</h4>
+                                    <div class="fare-row">
+                                        <span>Total Paid</span>
+                                        <span class="fare-value">₹150</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Your Split</span>
+                                        <span class="fare-value highlight">₹75</span>
+                                    </div>
+                                    <div class="fare-row">
+                                        <span>Payment</span>
+                                        <span class="fare-value">Cash</span>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section">
+                                    <h4 class="detail-section-title">Ride Metrics</h4>
+                                    <div class="metrics-row">
+                                        <div class="metric">
+                                            <span class="metric-value">22.1 km</span>
+                                            <span class="metric-label">Distance</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value">50 min</span>
+                                            <span class="metric-label">Duration</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-value status-completed">Completed</span>
+                                            <span class="metric-label">Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="history-detail-section safety-section">
+                                    <div class="ride-id">Ride ID: TC-240208-0730</div>
+                                    <div class="safety-actions">
+                                        <button class="safety-btn">Report Issue</button>
+                                        <button class="safety-btn">Download Receipt</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ride Registration Modal -->
+    <div class="ride-modal-overlay" id="rideModal">
+        <div class="ride-modal">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Ride</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Container -->
+            <div class="modal-content" id="modalContent">
+                <!-- Ride Summary -->
+                <div class="ride-summary">
+                    <div class="driver-profile">
+                        <div class="driver-avatar" id="modalDriverAvatar">AM</div>
+                        <div class="driver-details">
+                            <span class="driver-name" id="modalDriverName">Arjun Mehta</span>
+                            <div class="driver-rating">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ride-route">
+                        <div class="route-info-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="4" fill="#22c55e" />
+                            </svg>
+                            <span id="modalFromLocation">Powai</span>
+                        </div>
+                        <div class="route-connector">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M5 12h14" />
+                                <path d="m12 5 7 7-7 7" />
+                            </svg>
+                        </div>
+                        <div class="route-info-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" fill="#ef4444" />
+                            </svg>
+                            <span id="modalToLocation">BKC</span>
+                        </div>
+                    </div>
+                    <div class="ride-meta">
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" id="modalVehicleIcon">
+                                <circle cx="5.5" cy="17.5" r="3.5" />
+                                <circle cx="18.5" cy="17.5" r="3.5" />
+                                <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                            </svg>
+                            <span id="modalVehicleType">Bike</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <span id="modalDateTime">Today, 8:30 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="price-breakdown">
+                    <h3 class="section-title">Price Details</h3>
+                    <div class="price-row">
+                        <span>Base fare</span>
+                        <span id="modalBaseFare">₹40</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Platform fee</span>
+                        <span id="modalPlatformFee">₹3</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Tax (GST)</span>
+                        <span id="modalTax">₹2</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total</span>
+                        <span id="modalTotal">₹45</span>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-section">
+                    <h3 class="section-title">Payment Method</h3>
+                    <div class="payment-methods">
+                        <div class="payment-method-item active" data-method="upi">
+                            <div class="payment-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M10.6 7.4L7.3 21h2.8l1.2-5h2.8l-1.2 5h2.8l3.3-13.6h-2.8l-1.8 7.2h-2.8l1.8-7.2h-2.8z" />
+                                </svg>
+                            </div>
+                            <span>UPI</span>
+                            <div class="check-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="payment-method-item" data-method="card">
+                            <div class="payment-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                    <line x1="1" y1="10" x2="23" y2="10" />
+                                </svg>
+                            </div>
+                            <span>Card</span>
+                            <div class="check-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="payment-method-item" data-method="wallet">
+                            <div class="payment-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                                    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                                    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+                                </svg>
+                            </div>
+                            <span>Wallet</span>
+                            <div class="check-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Driver Contact -->
+                <div class="driver-contact">
+                    <div class="contact-info">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <span class="phone-number">+91 98XXX XXX42</span>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="contact-btn" title="Call driver">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" />
+                            </svg>
+                        </button>
+                        <button class="contact-btn" title="Copy number">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" id="modalCancel">Cancel</button>
+                    <button class="modal-btn primary" id="modalProceed">Proceed to Pay</button>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="modal-footer">
+                    <div class="secure-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        <span>Secure Payment</span>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#">Refund Policy</a>
+                        <span>•</span>
+                        <a href="#">Support</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Close Message Overlay (for shrink + roll animation) -->
+            <div class="close-message-overlay" id="closeMessageOverlay">
+                <div class="close-message">
+                    <div class="close-message-icon" id="closeMessageIcon">
+                        <!-- Cancel X icon or Success checkmark -->
+                        <svg id="cancelIcon" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                        <svg id="successIcon" class="hidden" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <span class="close-message-text" id="closeMessageText">Registration Canceled</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Utility Panel -->
+        <aside class="right-panel" id="rightPanel">
+            <div class="right-panel-inner">
+                <!-- Reserved for future modules: insights, maps, activity, suggestions -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- Notification Center Panel -->
+    <div class="notification-overlay" id="notificationOverlay"></div>
+    <aside class="notification-panel" id="notificationPanel">
+        <header class="notification-header">
+            <button class="notification-close-btn" id="notificationClose" aria-label="Close notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <h2 class="notification-title">Notifications</h2>
+            <button class="mark-all-read-btn" id="markAllRead">Mark all as read</button>
+        </header>
+
+        <div class="notification-list" id="notificationList">
+
+            <!-- Ride Confirmed -->
+            <div class="notification-card-wrapper" data-card-type="ride">
+                <div class="notification-card unread" data-type="ride">
+                    <div class="notification-icon ride">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 17h14v-5l-2-4H7l-2 4v5z" />
+                            <circle cx="7.5" cy="17" r="1.5" />
+                            <circle cx="16.5" cy="17" r="1.5" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Ride Confirmed</span>
+                        <p class="notification-desc">Your ride with Arjun M. to BKC has been confirmed for 8:30 AM</p>
+                        <span class="notification-time">2 min ago</span>
+                    </div>
+                    <span class="unread-dot"></span>
+                    <!-- Expanded details -->
+                    <div class="notification-expanded-details">
+                        <div class="notification-expanded-inner">
+                            <div class="notification-expanded-info">
+                                <p>🚗 <strong>Driver:</strong> Arjun M. • Rating: 4.8★</p>
+                                <p>📍 <strong>Route:</strong> Powai → BKC</p>
+                                <p>⏰ <strong>Pickup:</strong> Today, 8:30 AM</p>
+                                <p>💵 <strong>Fare:</strong> ₹245</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Received -->
+            <div class="notification-card-wrapper" data-card-type="payment">
+                <div class="notification-card unread" data-type="payment">
+                    <div class="notification-icon payment">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Payment Received</span>
+                        <p class="notification-desc">₹180 received from Priya S. for yesterday's carpool</p>
+                        <span class="notification-time">15 min ago</span>
+                    </div>
+                    <span class="unread-dot"></span>
+                    <!-- Expanded details -->
+                    <div class="notification-expanded-details">
+                        <div class="notification-expanded-inner">
+                            <div class="notification-expanded-info">
+                                <p>💳 <strong>Amount:</strong> ₹180.00</p>
+                                <p>👤 <strong>From:</strong> Priya S.</p>
+                                <p>📝 <strong>For:</strong> Carpool — Andheri to Dadar</p>
+                                <p>✅ <strong>Status:</strong> Credited to wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message from Rohan (with inline reply) -->
+            <div class="notification-card-wrapper" data-card-type="message">
+                <div class="notification-card unread" data-type="message" data-chat-id="rohan" data-sender="Rohan K."
+                    data-message="Can we push the ride to 9 AM instead?">
+                    <div class="notification-icon message">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Rohan K.</span>
+                        <p class="notification-desc">"Can we push the ride to 9 AM instead?"</p>
+                        <span class="notification-time">1 hour ago</span>
+                        <!-- Expanded details -->
+                        <div class="notification-expanded-details">
+                            <div class="notification-expanded-inner">
+                                <span class="expanded-sender-name">Rohan K.</span>
+                                <span class="expanded-replying-label">Replying to:</span>
+                                <p class="notification-full-message">"Can we push the ride to 9 AM instead?"</p>
+
+                                <!-- Reply Toggle Button -->
+                                <button class="reply-toggle-btn">
+                                    <span>Reply</span>
+                                    <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </button>
+
+                                <!-- Reply Context Preview (visible when replying) -->
+                                <div class="reply-context-preview">
+                                    <span class="reply-context-label">Replying to <strong>Rohan K.</strong></span>
+                                    <div class="reply-context-bubble">
+                                        <p>"Can we push the ride to 9 AM instead?"</p>
+                                    </div>
+                                </div>
+
+                                <!-- Inline Reply Container -->
+                                <div class="inline-reply-wrapper">
+                                    <div class="inline-reply-container">
+                                        <input type="text" class="reply-input" placeholder="Type a reply...">
+                                        <button class="reply-emoji-btn" aria-label="Emoji" title="Emoji">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                                            </svg>
+                                        </button>
+                                        <button class="reply-send-btn">Send</button>
+                                        <button class="reply-cancel-btn">Cancel</button>
+                                    </div>
+                                </div>
+
+                                <!-- Status Indicators -->
+                                <span class="reply-status replied">✓ Replied</span>
+                                <span class="reply-status failed">⚠ Failed to send</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="unread-dot"></span>
+                </div>
+            </div>
+
+            <!-- Message from Neha (with inline reply) -->
+            <div class="notification-card-wrapper" data-card-type="message">
+                <div class="notification-card unread" data-type="message" data-chat-id="neha" data-sender="Neha S."
+                    data-message="I'll bring an extra helmet for you!">
+                    <div class="notification-icon message">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Neha S.</span>
+                        <p class="notification-desc">"I'll bring an extra helmet for you!"</p>
+                        <span class="notification-time">2 hours ago</span>
+                        <!-- Expanded details -->
+                        <div class="notification-expanded-details">
+                            <div class="notification-expanded-inner">
+                                <span class="expanded-sender-name">Neha S.</span>
+                                <span class="expanded-replying-label">Replying to:</span>
+                                <p class="notification-full-message">"I'll bring an extra helmet for you!"</p>
+
+                                <!-- Reply Toggle Button -->
+                                <button class="reply-toggle-btn">
+                                    <span>Reply</span>
+                                    <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </button>
+
+                                <!-- Reply Context Preview (visible when replying) -->
+                                <div class="reply-context-preview">
+                                    <span class="reply-context-label">Replying to <strong>Neha S.</strong></span>
+                                    <div class="reply-context-bubble">
+                                        <p>"I'll bring an extra helmet for you!"</p>
+                                    </div>
+                                </div>
+
+                                <!-- Inline Reply Container -->
+                                <div class="inline-reply-wrapper">
+                                    <div class="inline-reply-container">
+                                        <input type="text" class="reply-input" placeholder="Type a reply...">
+                                        <button class="reply-emoji-btn" aria-label="Emoji" title="Emoji">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                                            </svg>
+                                        </button>
+                                        <button class="reply-send-btn">Send</button>
+                                        <button class="reply-cancel-btn">Cancel</button>
+                                    </div>
+                                </div>
+
+                                <!-- Status Indicators -->
+                                <span class="reply-status replied">✓ Replied</span>
+                                <span class="reply-status failed">⚠ Failed to send</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="unread-dot"></span>
+                </div>
+            </div>
+
+            <!-- Route Change Alert -->
+            <div class="notification-card-wrapper" data-card-type="alert">
+                <div class="notification-card" data-type="alert">
+                    <div class="notification-icon alert">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Route Change</span>
+                        <p class="notification-desc">Traffic alert on Western Express Highway. Consider alternate route.
+                        </p>
+                        <span class="notification-time">3 hours ago</span>
+                    </div>
+                    <!-- Expanded details -->
+                    <div class="notification-expanded-details">
+                        <div class="notification-expanded-inner">
+                            <div class="notification-expanded-info">
+                                <p>⚠️ <strong>Alert:</strong> Heavy traffic on Western Express Highway</p>
+                                <p>🛣️ <strong>Alternate:</strong> Use Goregaon-Mulund Link Road</p>
+                                <p>⏱️ <strong>Delay:</strong> ~25 min expected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Updated -->
+            <div class="notification-card-wrapper" data-card-type="system">
+                <div class="notification-card" data-type="system">
+                    <div class="notification-icon system">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Profile Updated</span>
+                        <p class="notification-desc">Your vehicle details have been successfully updated.</p>
+                        <span class="notification-time">Yesterday</span>
+                    </div>
+                    <!-- Expanded details -->
+                    <div class="notification-expanded-details">
+                        <div class="notification-expanded-inner">
+                            <div class="notification-expanded-info">
+                                <p>🏍️ <strong>Vehicle:</strong> Honda Activa 6G</p>
+                                <p>🔢 <strong>Plate:</strong> MH 04 XX 1234</p>
+                                <p>✅ <strong>Status:</strong> Verified & active</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ride Completed -->
+            <div class="notification-card-wrapper" data-card-type="ride">
+                <div class="notification-card" data-type="ride">
+                    <div class="notification-icon ride">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="5.5" cy="17.5" r="3.5" />
+                            <circle cx="18.5" cy="17.5" r="3.5" />
+                            <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3.2-6H6m12 6.5l-2-7h-3l1 7" />
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <span class="notification-card-title">Ride Completed</span>
+                        <p class="notification-desc">Your ride from Andheri to Lower Parel was completed. Rate your
+                            experience!</p>
+                        <span class="notification-time">2 days ago</span>
+                    </div>
+                    <!-- Expanded details -->
+                    <div class="notification-expanded-details">
+                        <div class="notification-expanded-inner">
+                            <div class="notification-expanded-info">
+                                <p>📍 <strong>Route:</strong> Andheri → Lower Parel</p>
+                                <p>⏱️ <strong>Duration:</strong> 38 min</p>
+                                <p>💵 <strong>Fare:</strong> ₹165</p>
+                                <p>⭐ <strong>Rate your ride</strong> to help improve the community!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="notification-empty" id="notificationEmpty">
+            <div class="empty-illustration">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+            </div>
+            <span class="empty-text">No new notifications</span>
+            <span class="empty-subtext">You're all caught up!</span>
+        </div>
+
+        <!-- Loading Shimmer (hidden by default) -->
+        <div class="notification-loading" id="notificationLoading">
+            <div class="shimmer-card">
+                <div class="shimmer-icon"></div>
+                <div class="shimmer-content">
+                    <div class="shimmer-line title"></div>
+                    <div class="shimmer-line desc"></div>
+                    <div class="shimmer-line time"></div>
+                </div>
+            </div>
+            <div class="shimmer-card">
+                <div class="shimmer-icon"></div>
+                <div class="shimmer-content">
+                    <div class="shimmer-line title"></div>
+                    <div class="shimmer-line desc"></div>
+                    <div class="shimmer-line time"></div>
+                </div>
+            </div>
+            <div class="shimmer-card">
+                <div class="shimmer-icon"></div>
+                <div class="shimmer-content">
+                    <div class="shimmer-line title"></div>
+                    <div class="shimmer-line desc"></div>
+                    <div class="shimmer-line time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State (hidden by default) -->
+        <div class="notification-error" id="notificationError">
+            <div class="error-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </div>
+            <span class="error-text">Something went wrong</span>
+            <button class="retry-btn" id="retryNotifications">Try Again</button>
+        </div>
+    </aside>
+
+    <!-- iOS Tap/Confirmation Sound -->
+    <audio id="iosConfirmSound" preload="auto">
+        <source src="https://cdn.freesound.org/previews/678/678566_5674468-lq.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
