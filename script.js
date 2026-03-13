@@ -89,6 +89,8 @@
             scrollToLatestMessage();
         } else if (newPage === 'booked') {
             renderBookedRides();
+        } else if (newPage === 'history') {
+            renderCompletedHistory();
         }
 
         // Clean up exiting class after transition completes
@@ -338,12 +340,21 @@
                     const postId = postCard ? postCard.getAttribute('data-post-id') : null;
                     if (postId) removeBookedRide(postId);
 
+                    // Update seat status UI
+                    if (postCard) updateSeatStatusUI(postCard);
+
                     setTimeout(() => {
                         wrapper.classList.remove('deregistering');
                     }, 400);
                 } else {
-                    // Open the modal instead of direct registration
+                    // Check seat availability before opening modal
                     const postCard = wrapper.closest('.post-card');
+                    if (postCard) {
+                        const postId = postCard.getAttribute('data-post-id');
+                        const vehicleType = postCard.getAttribute('data-vehicle-type') || 'car';
+                        const seatInfo = getSeatInfo(postId, vehicleType);
+                        if (seatInfo.isFull) return; // Seats full, don't open modal
+                    }
                     openRideModal(postCard, wrapper);
                 }
             });
@@ -517,6 +528,8 @@
                 setTimeout(() => {
                     wrapperToUpdate.classList.remove('registering');
                     wrapperToUpdate.classList.add('registered');
+                    // Update seat status UI after registration
+                    if (postCard) updateSeatStatusUI(postCard);
                 }, 300);
             }
 
@@ -654,6 +667,275 @@
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12 || 12;
         return `${hours}:${minutes} ${ampm}`;
+    }
+
+    // ============================================
+    // Chat Conversation Data (for switching conversations)
+    // ============================================
+    const chatConversationData = {
+        arjun: {
+            name: 'Arjun Mehta',
+            initials: 'AM',
+            messages: [
+                { type: 'received', text: 'Hey! Are we still on for tomorrow\'s ride to BKC?', time: '9:30 AM' },
+                { type: 'sent', text: 'Yes, absolutely! I\'ll pick you up at 8:30 AM', time: '9:32 AM' },
+                { type: 'received', text: 'Perfect! Should I wait at the usual spot near the metro station?', time: '9:33 AM' },
+                { type: 'sent', text: 'Yes, same place as last time. I\'ll be in the white Honda City', time: '9:35 AM' },
+                { type: 'received', text: 'Great! How much should I transfer for the ride?', time: '9:36 AM' },
+                { type: 'sent', text: 'It\'s ₹45 for the bike ride, but since we\'re doing car pooling with 2 more people, it\'ll be just ₹35 per person 👍', time: '9:38 AM' },
+                { type: 'received', text: 'That\'s a good deal! I\'ll pay you in the morning', time: '9:40 AM' },
+                { type: 'sent', text: 'No worries! You can also pay via UPI if that\'s easier', time: '9:41 AM' },
+                { type: 'received', text: 'See you at 9 AM tomorrow!', time: '9:42 AM' },
+            ]
+        },
+        priya: {
+            name: 'Priya Sharma',
+            initials: 'PS',
+            messages: [
+                { type: 'received', text: 'The ride was really smooth today!', time: '4:30 PM' },
+                { type: 'sent', text: 'Glad you liked it! Same route tomorrow?', time: '4:32 PM' },
+                { type: 'received', text: 'Thanks for the ride today 🚗', time: '4:45 PM' },
+            ]
+        },
+        rohan: {
+            name: 'Rohan Kapoor',
+            initials: 'RK',
+            messages: [
+                { type: 'sent', text: 'Sure, 8:30 AM works for me.', time: '3:00 PM' },
+                { type: 'received', text: 'Actually, can we push it a bit?', time: '3:15 PM' },
+                { type: 'received', text: 'Can we reschedule to Thursday?', time: '3:20 PM' },
+            ]
+        },
+        neha: {
+            name: 'Neha Kulkarni',
+            initials: 'NK',
+            messages: [
+                { type: 'received', text: 'Are you leaving from Powai today?', time: '11:00 AM' },
+                { type: 'sent', text: 'Yes, around 6 PM. Want to join?', time: '11:05 AM' },
+                { type: 'received', text: 'I\'ll be waiting at the usual spot', time: '11:10 AM' },
+            ]
+        },
+        vikram: {
+            name: 'Vikram Rao',
+            initials: 'VR',
+            messages: [
+                { type: 'received', text: 'That was a really nice drive', time: 'Yesterday' },
+                { type: 'sent', text: 'Thanks! Happy to carpool anytime', time: 'Yesterday' },
+                { type: 'received', text: 'Great driving today!', time: 'Yesterday' },
+            ]
+        },
+        ananya: {
+            name: 'Ananya Singh',
+            initials: 'AS',
+            messages: [
+                { type: 'sent', text: 'I\'m on my way, about 10 min away', time: '2 days ago' },
+                { type: 'received', text: 'Sure, take your time!', time: '2 days ago' },
+                { type: 'received', text: 'Let me know when you reach', time: '2 days ago' },
+            ]
+        },
+    };
+
+    // ============================================
+    // Direct Message from Post Cards
+    // ============================================
+    function openDirectMessage(chatId) {
+        // 1. Navigate to chat tab
+        elements.sidebarNavItems.forEach(nav => nav.classList.remove('active'));
+        const chatNavBtn = document.querySelector('.sidebar-nav-item[data-tab="chat"]');
+        if (chatNavBtn) chatNavBtn.classList.add('active');
+        transitionToPage('chat');
+
+        // 2. Look for existing inbox item
+        let inboxItem = document.querySelector(`.inbox-item[data-chat="${chatId}"]`);
+        const chatData = chatConversationData[chatId];
+
+        // 3. If no inbox item exists, create one
+        if (!inboxItem && chatData) {
+            const inboxList = document.querySelector('.inbox-list');
+            if (inboxList) {
+                inboxItem = document.createElement('div');
+                inboxItem.className = 'inbox-item';
+                inboxItem.setAttribute('data-chat', chatId);
+                inboxItem.innerHTML = `
+                    <div class="inbox-avatar">${chatData.initials}</div>
+                    <div class="inbox-info">
+                        <span class="inbox-name">${escapeHtml(chatData.name)}</span>
+                        <span class="inbox-preview">Start a conversation...</span>
+                    </div>
+                    <span class="inbox-time">Now</span>
+                `;
+                inboxList.prepend(inboxItem);
+
+                // Wire up the click handler on the new inbox item
+                inboxItem.addEventListener('click', function () {
+                    document.querySelectorAll('.inbox-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    this.classList.remove('unread');
+                    const badge = this.querySelector('.inbox-badge');
+                    if (badge) {
+                        badge.style.transform = 'scale(0)';
+                        setTimeout(() => badge.remove(), 200);
+                    }
+                    loadChatConversation(this.getAttribute('data-chat'));
+                });
+
+                // Create empty conversation data if none exists
+                if (!chatConversationData[chatId]) {
+                    chatConversationData[chatId] = {
+                        name: chatData.name,
+                        initials: chatData.initials,
+                        messages: []
+                    };
+                }
+            }
+        }
+
+        // 4. Select the inbox item and load the conversation
+        if (inboxItem) {
+            document.querySelectorAll('.inbox-item').forEach(i => i.classList.remove('active'));
+            inboxItem.classList.add('active');
+            inboxItem.classList.remove('unread');
+            const badge = inboxItem.querySelector('.inbox-badge');
+            if (badge) {
+                badge.style.transform = 'scale(0)';
+                setTimeout(() => badge.remove(), 200);
+            }
+        }
+
+        loadChatConversation(chatId);
+    }
+
+    function loadChatConversation(chatId) {
+        const chatData = chatConversationData[chatId];
+        if (!chatData) return;
+
+        // Update chat header
+        const chatUserAvatar = document.querySelector('.chat-user-avatar');
+        const chatUserName = document.querySelector('.chat-user-name');
+        const chatUserStatus = document.querySelector('.chat-user-status');
+
+        if (chatUserAvatar) chatUserAvatar.textContent = chatData.initials;
+        if (chatUserName) chatUserName.textContent = chatData.name;
+        if (chatUserStatus) chatUserStatus.textContent = 'Active now';
+
+        // Load messages
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+
+        let messagesHTML = '<div class="message-date-separator"><span>Today</span></div>';
+
+        if (chatData.messages.length === 0) {
+            messagesHTML += `
+                <div class="message-date-separator"><span>No messages yet. Say hello!</span></div>
+            `;
+        } else {
+            chatData.messages.forEach(msg => {
+                messagesHTML += `
+                    <div class="message ${msg.type}">
+                        <div class="message-bubble">${escapeHtml(msg.text)}</div>
+                        <span class="message-time">${msg.time}</span>
+                    </div>
+                `;
+            });
+        }
+
+        chatMessages.innerHTML = messagesHTML;
+        scrollToLatestMessage();
+    }
+
+    function initDMButtons() {
+        document.querySelectorAll('.post-dm-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const chatId = this.getAttribute('data-chat-id');
+                if (chatId) openDirectMessage(chatId);
+            });
+        });
+
+        // Also wire up inbox items to load conversations on click
+        document.querySelectorAll('.inbox-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const chatId = this.getAttribute('data-chat');
+                if (chatId) loadChatConversation(chatId);
+            });
+        });
+    }
+
+    // ============================================
+    // Creator Follow / Notification Subscription
+    // ============================================
+    function getFollowedCreators() {
+        try {
+            return JSON.parse(localStorage.getItem('followed_creators') || '[]');
+        } catch { return []; }
+    }
+
+    function saveFollowedCreators(list) {
+        localStorage.setItem('followed_creators', JSON.stringify(list));
+    }
+
+    function toggleFollowCreator(creatorId, btn) {
+        let list = getFollowedCreators();
+        const isFollowing = list.includes(creatorId);
+
+        if (isFollowing) {
+            list = list.filter(id => id !== creatorId);
+            btn.classList.remove('active');
+        } else {
+            list.push(creatorId);
+            btn.classList.add('active');
+        }
+
+        saveFollowedCreators(list);
+
+        // Play ring animation
+        btn.classList.add('ringing');
+        setTimeout(() => btn.classList.remove('ringing'), 500);
+    }
+
+    function initFollowButtons() {
+        const followedList = getFollowedCreators();
+
+        document.querySelectorAll('.post-follow-btn').forEach(btn => {
+            const creatorId = btn.getAttribute('data-creator-id');
+
+            // Sync initial active state
+            if (followedList.includes(creatorId)) {
+                btn.classList.add('active');
+            }
+
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFollowCreator(creatorId, this);
+            });
+        });
+    }
+
+    function notifyFollowers(creatorName, postData) {
+        // Show a toast notification for the current user
+        const toast = document.createElement('div');
+        toast.className = 'follow-toast';
+        toast.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke-width="2" />
+            </svg>
+            <span><strong>${escapeHtml(creatorName)}</strong> posted a new ride: ${escapeHtml(postData.pickup)} → ${escapeHtml(postData.destination)}</span>
+        `;
+        document.body.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.classList.add('visible');
+        });
+
+        // Auto-remove after 4 seconds
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
     }
 
 
@@ -1124,6 +1406,8 @@
         destAddress: { street: '', area: '', pincode: '' }
     };
 
+    let editingPostId = null; // Track if we're editing an existing post
+
     // ============================================
     // Post Form - Address Sub-field Toggle
     // ============================================
@@ -1498,10 +1782,11 @@
         if (!feedScroll) return;
 
         const isBike = postDraft.vehicleType === 'bike';
+        const isEditing = editingPostId !== null;
 
         // Build post data object for persistence
         const postData = {
-            id: Date.now(),
+            id: isEditing ? editingPostId : Date.now(),
             pickup: postDraft.pickup,
             destination: postDraft.destination,
             price: postDraft.price,
@@ -1511,12 +1796,29 @@
             arriveTime: postDraft.arriveTime,
             pickupAddress: { ...postDraft.pickupAddress },
             destAddress: { ...postDraft.destAddress },
+            passengers: [],
+            createdBy: CURRENT_USER_ID,
             createdAt: new Date().toISOString()
         };
 
         // Save to localStorage
         const savedPosts = JSON.parse(localStorage.getItem('travel_posts') || '[]');
-        savedPosts.unshift(postData);
+
+        if (isEditing) {
+            // Update existing post
+            const idx = savedPosts.findIndex(p => String(p.id) === String(editingPostId));
+            if (idx !== -1) {
+                postData.passengers = savedPosts[idx].passengers || [];
+                postData.createdAt = savedPosts[idx].createdAt;
+                savedPosts[idx] = postData;
+            }
+            // Remove old DOM card
+            const oldCard = document.querySelector(`#page-home .post-card[data-post-id="${editingPostId}"]`);
+            if (oldCard) oldCard.remove();
+        } else {
+            savedPosts.unshift(postData);
+        }
+
         localStorage.setItem('travel_posts', JSON.stringify(savedPosts));
 
         // Create new post card element
@@ -1535,8 +1837,18 @@
         }, 50);
 
         // Reset and navigate
+        editingPostId = null;
         resetPostForm();
         navigateToHome();
+
+        // Notify followers of this creator
+        if (!editingPostId) {
+            const followedList = getFollowedCreators();
+            // The current user is 'yogiraj-kulkarni'; check if anyone follows them
+            if (followedList.includes('yogiraj-kulkarni')) {
+                notifyFollowers('Yogiraj Kulkarni', postData);
+            }
+        }
     }
 
     function createPostCardElement(postData) {
@@ -1552,12 +1864,55 @@
             return parts.length > 0 ? parts.join(', ') : postData.destination;
         })();
 
+        const maxSeats = postData.vehicleType === 'bike' ? 1 : 3;
         const el = document.createElement('article');
         el.className = 'post-card';
         el.setAttribute('data-animate', 'pop-in');
         el.setAttribute('data-post-id', postData.id);
+        el.setAttribute('data-vehicle-type', postData.vehicleType || 'car');
+        const isOwner = postData.createdBy === CURRENT_USER_ID;
+        const menuHTML = isOwner ? `
+            <div class="post-menu">
+                <button class="post-menu-trigger" aria-label="Post options">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="5" r="1.5" />
+                        <circle cx="12" cy="12" r="1.5" />
+                        <circle cx="12" cy="19" r="1.5" />
+                    </svg>
+                </button>
+                <div class="post-menu-dropdown">
+                    <button class="post-menu-item" data-action="edit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        Edit Post
+                    </button>
+                    <button class="post-menu-item danger" data-action="delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        Delete Post
+                    </button>
+                </div>
+            </div>
+        ` : '';
+
         el.innerHTML = `
             <div class="glass-overlay"></div>
+            ${!isOwner ? `
+            <button class="post-follow-btn" data-creator-id="yogiraj-kulkarni" data-creator-name="Yogiraj Kulkarni" aria-label="Follow Yogiraj Kulkarni">
+                <svg class="bell-outline" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                <svg class="bell-filled" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke-width="2" />
+                </svg>
+            </button>
+            ` : ''}
             <header class="post-header">
                 <div class="avatar-container">
                     <div class="avatar">YK</div>
@@ -1565,6 +1920,14 @@
                 <div class="user-info">
                     <span class="user-name">Yogiraj Kulkarni</span>
                 </div>
+                ${!isOwner ? `
+                <button class="post-dm-btn" data-chat-id="yogiraj" aria-label="Message Yogiraj Kulkarni">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </button>
+                ` : ''}
+                ${menuHTML}
             </header>
             <div class="route-strip">
                 <div class="route-collapsed">
@@ -1637,12 +2000,12 @@
                         <span class="currency">₹</span>
                         <span class="amount">${postData.price}</span>
                     </div>
-                    <div class="seats-badge">
+                    <div class="seat-status" data-max-seats="${maxSeats}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
                         </svg>
-                        <span>${postData.seats}</span> seat${postData.seats === 1 ? '' : 's'}
+                        <span class="seat-status-text">Seats Remaining: ${maxSeats} / ${maxSeats}</span>
                     </div>
                     <div class="register-wrapper">
                         <div class="register-line"></div>
@@ -1673,16 +2036,54 @@
                     // Remove from localStorage
                     const pId = postCard.getAttribute('data-post-id');
                     if (pId) removeBookedRide(pId);
+                    // Update seat status UI
+                    updateSeatStatusUI(postCard);
                     setTimeout(() => wrapper.classList.remove('deregistering'), 400);
                 } else {
+                    // Check seat availability
+                    const pId = postCard.getAttribute('data-post-id');
+                    const vType = postCard.getAttribute('data-vehicle-type') || 'car';
+                    const seatInfo = getSeatInfo(pId, vType);
+                    if (seatInfo.isFull) return;
                     openRideModal(postCard, wrapper);
                 }
             });
         }
 
+        // Post menu (three-dot)
+        const menuTrigger = postCard.querySelector('.post-menu-trigger');
+        const menuDropdown = postCard.querySelector('.post-menu-dropdown');
+        if (menuTrigger && menuDropdown) {
+            menuTrigger.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Close any other open menus
+                document.querySelectorAll('.post-menu-dropdown.open').forEach(dd => {
+                    if (dd !== menuDropdown) dd.classList.remove('open');
+                });
+                menuDropdown.classList.toggle('open');
+            });
+
+            // Menu item actions
+            menuDropdown.querySelectorAll('.post-menu-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menuDropdown.classList.remove('open');
+                    const action = this.getAttribute('data-action');
+                    const postId = postCard.getAttribute('data-post-id');
+                    if (action === 'delete') {
+                        showDeleteConfirmation(postId, postCard);
+                    } else if (action === 'edit') {
+                        editPost(postId);
+                    }
+                });
+            });
+        }
+
         // Card click animation
         postCard.addEventListener('click', function (e) {
-            if (e.target.closest('.register-btn')) return;
+            if (e.target.closest('.register-btn') || e.target.closest('.post-menu') || e.target.closest('.post-dm-btn') || e.target.closest('.post-follow-btn')) return;
             const movingVehicle = this.querySelector('.moving-vehicle:not(.hidden)');
             if (movingVehicle && !this.classList.contains('activated')) {
                 this.classList.add('activated');
@@ -1695,7 +2096,160 @@
                 }, 2000);
             }
         });
+
+        // Follow bell button
+        const followBtn = postCard.querySelector('.post-follow-btn');
+        if (followBtn) {
+            const creatorId = followBtn.getAttribute('data-creator-id');
+            const followedList = getFollowedCreators();
+            if (followedList.includes(creatorId)) {
+                followBtn.classList.add('active');
+            }
+            followBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFollowCreator(creatorId, this);
+            });
+        }
+
+        // Initial seat status
+        updateSeatStatusUI(postCard);
     }
+
+    // ============================================
+    // Post Management — Delete & Edit
+    // ============================================
+    function showDeleteConfirmation(postId, postCard) {
+        // Remove any existing modal
+        const existing = document.getElementById('deleteConfirmModal');
+        if (existing) existing.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'deleteConfirmModal';
+        modal.className = 'delete-confirm-overlay';
+        modal.innerHTML = `
+            <div class="delete-confirm-modal">
+                <div class="delete-confirm-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                </div>
+                <h3 class="delete-confirm-title">Delete this ride?</h3>
+                <p class="delete-confirm-desc">This action cannot be undone. The ride post will be permanently removed.</p>
+                <div class="delete-confirm-actions">
+                    <button class="delete-confirm-btn cancel" id="deleteCancel">Cancel</button>
+                    <button class="delete-confirm-btn confirm" id="deleteConfirm">Delete</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Animate in
+        requestAnimationFrame(() => modal.classList.add('visible'));
+
+        const closeModal = () => {
+            modal.classList.remove('visible');
+            setTimeout(() => modal.remove(), 250);
+        };
+
+        modal.querySelector('#deleteCancel').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        modal.querySelector('#deleteConfirm').addEventListener('click', () => {
+            deletePost(postId, postCard);
+            closeModal();
+        });
+    }
+
+    function deletePost(postId, postCard) {
+        // Remove from localStorage
+        const savedPosts = JSON.parse(localStorage.getItem('travel_posts') || '[]');
+        const filtered = savedPosts.filter(p => String(p.id) !== String(postId));
+        localStorage.setItem('travel_posts', JSON.stringify(filtered));
+
+        // Also remove from booked rides and passengers
+        removeBookedRide(postId);
+
+        // Animate card removal
+        if (postCard) {
+            postCard.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            postCard.style.transform = 'scale(0.9)';
+            postCard.style.opacity = '0';
+            setTimeout(() => postCard.remove(), 400);
+        }
+    }
+
+    function editPost(postId) {
+        const savedPosts = JSON.parse(localStorage.getItem('travel_posts') || '[]');
+        const postData = savedPosts.find(p => String(p.id) === String(postId));
+        if (!postData) return;
+
+        // Set editing mode
+        editingPostId = postData.id;
+
+        // Populate draft
+        postDraft.pickup = postData.pickup || '';
+        postDraft.destination = postData.destination || '';
+        postDraft.vehicleType = postData.vehicleType || 'bike';
+        postDraft.price = postData.price || 0;
+        postDraft.seats = postData.seats || 1;
+        postDraft.departTime = postData.departTime || '';
+        postDraft.arriveTime = postData.arriveTime || '';
+        postDraft.pickupAddress = postData.pickupAddress || { street: '', area: '', pincode: '' };
+        postDraft.destAddress = postData.destAddress || { street: '', area: '', pincode: '' };
+
+        // Populate form inputs
+        const pickupInput = document.getElementById('postPickup');
+        const destinationInput = document.getElementById('postDestination');
+        const priceInput = document.getElementById('postPrice');
+        const seatsInput = document.getElementById('postSeats');
+        const departTimeInput = document.getElementById('postDepartTime');
+        const arriveTimeInput = document.getElementById('postArriveTime');
+
+        if (pickupInput) pickupInput.value = postDraft.pickup;
+        if (destinationInput) destinationInput.value = postDraft.destination;
+        if (priceInput) priceInput.value = postDraft.price;
+        if (seatsInput) seatsInput.value = postDraft.seats;
+        if (departTimeInput) departTimeInput.value = postDraft.departTime;
+        if (arriveTimeInput) arriveTimeInput.value = postDraft.arriveTime;
+
+        // Set vehicle type
+        document.querySelectorAll('.vehicle-option').forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.dataset.vehicle === postDraft.vehicleType) opt.classList.add('active');
+        });
+
+        // Populate address sub-fields
+        const setAddr = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        setAddr('pickupStreet', postDraft.pickupAddress.street);
+        setAddr('pickupArea', postDraft.pickupAddress.area);
+        setAddr('pickupPincode', postDraft.pickupAddress.pincode);
+        setAddr('destStreet', postDraft.destAddress.street);
+        setAddr('destArea', postDraft.destAddress.area);
+        setAddr('destPincode', postDraft.destAddress.pincode);
+
+        // Ensure create step is active
+        const stepCreate = document.getElementById('postStepCreate');
+        const stepPreview = document.getElementById('postStepPreview');
+        if (stepCreate) stepCreate.classList.add('active');
+        if (stepPreview) stepPreview.classList.remove('active');
+
+        // Navigate to Post page
+        const postBtn = document.querySelector('.sidebar-nav-item[data-tab="post"]');
+        if (postBtn) postBtn.click();
+    }
+
+    // Close post menus on outside click
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.post-menu-dropdown.open').forEach(dd => {
+            dd.classList.remove('open');
+        });
+    });
 
     function loadSavedPosts() {
         const savedPosts = JSON.parse(localStorage.getItem('travel_posts') || '[]');
@@ -1727,8 +2281,20 @@
     // ============================================
     // Booked Rides — localStorage helpers
     // ============================================
+    function getRawBookedRides() {
+        const raw = JSON.parse(localStorage.getItem('booked_rides') || '[]');
+        // Backwards compat: migrate old string IDs to objects
+        return raw.map(item => {
+            if (typeof item === 'string') {
+                return { postId: item, status: 'active', from: '', to: '', driverName: '', departTime: '', arriveTime: '', date: '' };
+            }
+            return item;
+        });
+    }
+
     function getBookedRides() {
-        return JSON.parse(localStorage.getItem('booked_rides') || '[]');
+        // Return only postId strings for active rides (for backwards compat with rendering)
+        return getRawBookedRides().filter(r => r.status === 'active').map(r => r.postId);
     }
 
     function saveBookedRides(arr) {
@@ -1736,11 +2302,47 @@
     }
 
     function addBookedRide(postId) {
-        const rides = getBookedRides();
-        if (!rides.includes(String(postId))) {
-            rides.push(String(postId));
-            saveBookedRides(rides);
+        const rides = getRawBookedRides();
+        if (rides.some(r => r.postId === String(postId))) return;
+
+        // Extract ride data from the post card
+        let from = '', to = '', driverName = '', departTime = '', arriveTime = '';
+        const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+        if (postCard) {
+            from = postCard.querySelector('.route-from')?.textContent || '';
+            to = postCard.querySelector('.route-to')?.textContent || '';
+            driverName = postCard.querySelector('.user-name')?.textContent || '';
+            const timeValues = postCard.querySelectorAll('.time-value');
+            departTime = timeValues[0]?.textContent || '';
+            arriveTime = timeValues[1]?.textContent || '';
+        } else {
+            // Try from saved posts (user-created)
+            const savedPosts = JSON.parse(localStorage.getItem('travel_posts') || '[]');
+            const postData = savedPosts.find(p => String(p.id) === String(postId));
+            if (postData) {
+                from = postData.pickup || '';
+                to = postData.destination || '';
+                driverName = 'Yogiraj Kulkarni';
+                departTime = postData.departTime || '';
+                arriveTime = postData.arriveTime || '';
+            }
         }
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        rides.push({
+            postId: String(postId),
+            status: 'active',
+            from,
+            to,
+            driverName,
+            departTime,
+            arriveTime,
+            date: dateStr
+        });
+        saveBookedRides(rides);
+
         const passengers = JSON.parse(localStorage.getItem('ride_passengers') || '{}');
         if (!passengers[postId]) passengers[postId] = [];
         if (!passengers[postId].includes(CURRENT_USER_ID)) {
@@ -1750,7 +2352,7 @@
     }
 
     function removeBookedRide(postId) {
-        const rides = getBookedRides().filter(id => id !== String(postId));
+        const rides = getRawBookedRides().filter(r => r.postId !== String(postId));
         saveBookedRides(rides);
         const passengers = JSON.parse(localStorage.getItem('ride_passengers') || '{}');
         if (passengers[postId]) {
@@ -1762,6 +2364,104 @@
 
     function isRideBooked(postId) {
         return getBookedRides().includes(String(postId));
+    }
+
+    // ============================================
+    // Completed Rides — localStorage helpers
+    // ============================================
+    function getCompletedRides() {
+        return JSON.parse(localStorage.getItem('completed_rides') || '[]');
+    }
+
+    function addCompletedRide(rideData) {
+        const completed = getCompletedRides();
+        completed.unshift(rideData);
+        localStorage.setItem('completed_rides', JSON.stringify(completed));
+    }
+
+    function completeRide(postId) {
+        const rides = getRawBookedRides();
+        const rideIndex = rides.findIndex(r => r.postId === String(postId) && r.status === 'active');
+        if (rideIndex === -1) return;
+
+        const ride = rides[rideIndex];
+        ride.status = 'completed';
+        saveBookedRides(rides);
+
+        // Store in completed rides for history
+        const now = new Date();
+        addCompletedRide({
+            postId: ride.postId,
+            from: ride.from,
+            to: ride.to,
+            driverName: ride.driverName,
+            departTime: ride.departTime,
+            arriveTime: ride.arriveTime,
+            date: ride.date || now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+            completedAt: now.toISOString(),
+            status: 'completed'
+        });
+
+        // Remove passenger entry
+        const passengers = JSON.parse(localStorage.getItem('ride_passengers') || '{}');
+        if (passengers[postId]) {
+            passengers[postId] = passengers[postId].filter(u => u !== CURRENT_USER_ID);
+            if (passengers[postId].length === 0) delete passengers[postId];
+        }
+        localStorage.setItem('ride_passengers', JSON.stringify(passengers));
+    }
+
+    // ============================================
+    // Seat Management — Helpers
+    // ============================================
+    function getSeatInfo(postId, vehicleType) {
+        const maxSeats = vehicleType === 'bike' ? 1 : 3;
+        const passengers = JSON.parse(localStorage.getItem('ride_passengers') || '{}');
+        const ridePassengers = passengers[postId] || [];
+        const available = Math.max(0, maxSeats - ridePassengers.length);
+        return {
+            maxSeats,
+            passengers: ridePassengers,
+            available,
+            isFull: available === 0
+        };
+    }
+
+    function updateSeatStatusUI(postCard) {
+        if (!postCard) return;
+        const postId = postCard.getAttribute('data-post-id');
+        const vehicleType = postCard.getAttribute('data-vehicle-type');
+        if (!postId || !vehicleType) return;
+
+        const seatStatusEl = postCard.querySelector('.seat-status');
+        const seatTextEl = postCard.querySelector('.seat-status-text');
+        const registerBtn = postCard.querySelector('.register-btn');
+        const wrapper = postCard.querySelector('.register-wrapper');
+        if (!seatStatusEl || !seatTextEl) return;
+
+        const info = getSeatInfo(postId, vehicleType);
+
+        // Remove previous state classes
+        seatStatusEl.classList.remove('seat-occupied', 'ride-full');
+        if (wrapper) wrapper.classList.remove('seat-full');
+
+        if (info.isFull) {
+            if (vehicleType === 'bike') {
+                seatTextEl.textContent = 'Seat Occupied';
+                seatStatusEl.classList.add('seat-occupied');
+            } else {
+                seatTextEl.textContent = 'Ride Full';
+                seatStatusEl.classList.add('ride-full');
+            }
+            // Disable register button if user is NOT already registered
+            if (registerBtn && wrapper && !wrapper.classList.contains('registered')) {
+                registerBtn.disabled = true;
+                if (wrapper) wrapper.classList.add('seat-full');
+            }
+        } else {
+            seatTextEl.textContent = `Seats Remaining: ${info.available} / ${info.maxSeats}`;
+            if (registerBtn) registerBtn.disabled = false;
+        }
     }
 
     // ============================================
@@ -1799,9 +2499,13 @@
 
             if (!card) return;
 
-            // Replace register button with cancel button
+            // Replace register button with action buttons container
             const regWrapper = card.querySelector('.register-wrapper');
             if (regWrapper) {
+                const actionsContainer = document.createElement('div');
+                actionsContainer.className = 'booked-ride-actions';
+
+                // Cancel Registration button
                 const cancelBtn = document.createElement('button');
                 cancelBtn.className = 'cancel-registration-btn';
                 cancelBtn.innerHTML = `
@@ -1825,6 +2529,7 @@
                             homeWrapper.classList.remove('registered');
                             setTimeout(() => homeWrapper.classList.remove('deregistering'), 400);
                         }
+                        updateSeatStatusUI(homeCard);
                     }
 
                     card.classList.add('booked-card-removing');
@@ -1835,7 +2540,58 @@
                         if (remaining.length === 0 && emptyState) emptyState.style.display = 'flex';
                     }, 350);
                 });
-                regWrapper.replaceWith(cancelBtn);
+
+                // Complete Ride button
+                const completeBtn = document.createElement('button');
+                completeBtn.className = 'complete-ride-btn';
+                completeBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Complete Ride
+                `;
+                completeBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // 1. Change button text to "Completed ✓"
+                    completeBtn.classList.add('completed');
+                    completeBtn.innerHTML = 'Completed ✓';
+                    completeBtn.disabled = true;
+                    cancelBtn.disabled = true;
+                    cancelBtn.style.opacity = '0.4';
+                    cancelBtn.style.pointerEvents = 'none';
+
+                    // 2. Update status to completed
+                    completeRide(postId);
+
+                    // 3. Sync the Home feed card
+                    const homeCard = document.querySelector(`#page-home .post-card[data-post-id="${postId}"]`);
+                    if (homeCard) {
+                        const homeWrapper = homeCard.querySelector('.register-wrapper');
+                        if (homeWrapper) {
+                            homeWrapper.classList.add('deregistering');
+                            homeWrapper.classList.remove('registered');
+                            setTimeout(() => homeWrapper.classList.remove('deregistering'), 400);
+                        }
+                        updateSeatStatusUI(homeCard);
+                    }
+
+                    // 4. After 1 second, remove the card
+                    setTimeout(() => {
+                        card.classList.add('booked-card-removing');
+                        setTimeout(() => {
+                            card.remove();
+                            const remaining = getBookedRides();
+                            if (countEl) countEl.textContent = `${remaining.length} ride${remaining.length !== 1 ? 's' : ''}`;
+                            if (remaining.length === 0 && emptyState) emptyState.style.display = 'flex';
+                        }, 350);
+                    }, 1000);
+                });
+
+                actionsContainer.appendChild(cancelBtn);
+                actionsContainer.appendChild(completeBtn);
+                regWrapper.replaceWith(actionsContainer);
             }
 
             // Re-init address toggle on cloned card
@@ -1864,6 +2620,121 @@
         });
     }
 
+    // ============================================
+    // Completed Rides — History Rendering
+    // ============================================
+    function renderCompletedHistory() {
+        const historyList = document.querySelector('#page-history .history-list');
+        if (!historyList) return;
+
+        // Remove previously rendered dynamic cards
+        historyList.querySelectorAll('.history-card.dynamic-completed').forEach(c => c.remove());
+
+        const completedRides = getCompletedRides();
+        if (completedRides.length === 0) return;
+
+        // Update history count
+        const countEl = document.querySelector('#page-history .history-count');
+        const staticCount = historyList.querySelectorAll('.history-card:not(.dynamic-completed)').length;
+        const totalCount = staticCount + completedRides.length;
+        if (countEl) countEl.textContent = `${totalCount} rides`;
+
+        // Prepend completed rides to the top of the history list
+        completedRides.forEach(ride => {
+            const card = document.createElement('div');
+            card.className = 'history-card dynamic-completed';
+            card.setAttribute('data-ride-id', `completed-${ride.postId}`);
+
+            const timeRange = ride.departTime && ride.arriveTime
+                ? `${ride.departTime} \u2013 ${ride.arriveTime}`
+                : ride.departTime || 'N/A';
+
+            card.innerHTML = `
+                <div class="history-card-collapsed">
+                    <div class="history-date">
+                        <span class="history-date-day">${escapeHtml(ride.date || '')}</span>
+                        <span class="history-date-time">${escapeHtml(timeRange)}</span>
+                    </div>
+                    <div class="history-route-strip">
+                        <div class="route-point start">
+                            <svg class="start-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="4" fill="currentColor" />
+                            </svg>
+                            <span>${escapeHtml(ride.from || 'Unknown')}</span>
+                        </div>
+                        <div class="route-track">
+                            <div class="track-line"></div>
+                        </div>
+                        <div class="route-point end">
+                            <svg class="end-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" fill="currentColor" />
+                            </svg>
+                            <span>${escapeHtml(ride.to || 'Unknown')}</span>
+                        </div>
+                    </div>
+                    <div class="history-meta">
+                        <span class="history-driver-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            ${escapeHtml(ride.driverName || 'Driver')}
+                        </span>
+                        <span class="history-status-badge completed">Completed</span>
+                    </div>
+                    <div class="history-expand-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="history-card-expanded">
+                    <div class="history-detail-section">
+                        <h4 class="detail-section-title">Driver</h4>
+                        <div class="driver-info-row">
+                            <span class="driver-label">Name</span>
+                            <span class="driver-value">${escapeHtml(ride.driverName || 'N/A')}</span>
+                        </div>
+                    </div>
+                    <div class="history-detail-section">
+                        <h4 class="detail-section-title">Ride Metrics</h4>
+                        <div class="metrics-row">
+                            <div class="metric">
+                                <span class="metric-value status-completed">Completed</span>
+                                <span class="metric-label">Status</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Wire up expand/collapse
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('.safety-btn')) return;
+                const expandedEl = card.querySelector('.history-card-expanded');
+                const isExpanded = card.classList.contains('expanded');
+
+                // Collapse other expanded cards
+                document.querySelectorAll('#page-history .history-card.expanded').forEach(c => {
+                    if (c !== card) {
+                        const otherExp = c.querySelector('.history-card-expanded');
+                        if (otherExp) springAnimateCollapse(otherExp, c);
+                    }
+                });
+
+                if (isExpanded) {
+                    springAnimateCollapse(expandedEl, card);
+                } else {
+                    springAnimateExpand(expandedEl, card);
+                }
+            });
+
+            historyList.prepend(card);
+        });
+    }
+
     // Sync registration state on page load
     function syncRegistrationState() {
         const bookedIds = getBookedRides();
@@ -1876,6 +2747,8 @@
                     wrapper.classList.add('registered');
                 }
             }
+            // Always sync seat status for every card
+            updateSeatStatusUI(card);
         });
     }
 
@@ -2133,6 +3006,8 @@
         initNotificationButton();
         initChatInbox();
         initChatInput();
+        initDMButtons();
+        initFollowButtons();
         initMenuItems();
         initHistoryCards();
         loadSavedPosts();
