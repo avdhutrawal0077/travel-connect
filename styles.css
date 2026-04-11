@@ -5356,6 +5356,30 @@ input {
     color: var(--color-white-30);
 }
 
+/* History Empty State */
+.history-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-5);
+    text-align: center;
+    color: var(--color-white-50);
+}
+
+.history-empty-state p {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    margin: 0;
+    color: var(--color-white-70);
+}
+
+.history-empty-state span {
+    font-size: var(--text-sm);
+    color: var(--color-white-30);
+}
+
 /* Cancel Registration Button — replaces register-btn in booked cards */
 .cancel-registration-btn {
     display: flex;
@@ -5529,4 +5553,570 @@ input {
 .follow-toast strong {
     color: rgba(251, 191, 36, 0.95);
     font-weight: 600;
+}
+
+/* ============================================
+   RIDE RATING MODAL
+   ============================================ */
+.rating-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.rating-overlay.visible {
+    opacity: 1;
+}
+
+.rating-modal {
+    background: rgba(22, 22, 35, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 36px 32px 28px;
+    max-width: 340px;
+    width: 88%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    transform: scale(0.88) translateY(12px);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rating-overlay.visible .rating-modal {
+    transform: scale(1) translateY(0);
+}
+
+.rating-modal-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(251, 191, 36, 0.10);
+    border: 1px solid rgba(251, 191, 36, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    color: #fbbf24;
+}
+
+.rating-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: var(--weight-bold);
+    color: var(--color-white);
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+}
+
+/* Star Rating Input */
+.rating-stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.rating-star {
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    padding: 0;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating-star:hover {
+    transform: scale(1.18);
+}
+
+.rating-star:active {
+    transform: scale(0.95);
+}
+
+.rating-star.active {
+    color: #fbbf24;
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.4));
+}
+
+.rating-star.hover-preview {
+    color: rgba(251, 191, 36, 0.6);
+}
+
+.rating-star svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Submit Button */
+.rating-submit-btn {
+    width: 100%;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: var(--weight-semibold);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: rgba(251, 191, 36, 0.15);
+    color: rgba(251, 191, 36, 0.5);
+    border: 1px solid rgba(251, 191, 36, 0.15);
+    letter-spacing: 0.02em;
+}
+
+.rating-submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.rating-submit-btn.ready {
+    background: rgba(251, 191, 36, 0.9);
+    color: #1a1a2e;
+    border-color: rgba(251, 191, 36, 0.9);
+    opacity: 1;
+}
+
+.rating-submit-btn.ready:hover {
+    background: #fbbf24;
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
+    transform: translateY(-1px);
+}
+
+.rating-submit-btn.ready:active {
+    transform: scale(0.98) translateY(0);
+}
+
+/* ============================================
+   HISTORY CARD — RATING DISPLAY
+   ============================================ */
+.history-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding: 6px 0;
+}
+
+.history-rating-label {
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    color: rgba(255, 255, 255, 0.50);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.history-rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: #fbbf24;
+}
+
+.history-rating-stars svg {
+    width: 14px;
+    height: 14px;
+}
+
+.history-rating-stars svg.empty-star {
+    color: rgba(255, 255, 255, 0.15);
+}
+
+.history-rating-value {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: var(--weight-medium);
+}
+
+/* ═══════════════════════════════════════════
+   LANDING LAYER — Scroll-driven Earth page
+   ═══════════════════════════════════════════ */
+
+/* Scroll Driver */
+#scroll-container {
+  height: 1000vh;
+  position: relative;
+}
+
+/* Fixed Overlay */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Three.js Canvas Container */
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+
+#canvas-container canvas {
+  display: block;
+}
+
+/* Title Text */
+#title-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.15);
+  z-index: 1;
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 7rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  text-align: center;
+  width: 90vw;
+  max-width: 900px;
+}
+
+/* Info Cards */
+#card-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#overlay .info-card {
+  position: absolute;
+  text-align: center;
+  opacity: 0;
+  padding: 0 24px;
+  max-width: 700px;
+  will-change: transform, opacity;
+}
+
+#overlay .info-card h2 {
+  font-size: 4.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #f0f0f0;
+  margin-bottom: 12px;
+}
+
+#overlay .card-sub {
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1.3;
+  color: #a0a0a0;
+}
+
+#overlay .card-sub span {
+  display: inline;
+}
+
+/* CTA Buttons */
+#cta-buttons {
+  position: fixed;
+  bottom: 18vh;
+  left: 50%;
+  transform: translateX(-50%) translateY(24px);
+  z-index: 5;
+  display: flex;
+  gap: 20px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#cta-buttons.active {
+  pointer-events: auto;
+}
+
+#overlay .cta-btn,
+#cta-buttons .cta-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 14px 44px;
+  border: none;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  pointer-events: auto;
+}
+
+#overlay .cta-btn:hover,
+#cta-buttons .cta-btn:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+#overlay .cta-btn:active,
+#cta-buttons .cta-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+/* Loader */
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  background: #0a0a0a;
+}
+
+#loader span {
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #c8c8c8;
+}
+
+/* ═══════════════════════════════════════════
+   AUTH MODAL SYSTEM — Glassmorphism
+   ═══════════════════════════════════════════ */
+
+/* Dimmed + blurred backdrop */
+#auth-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#auth-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Modal container */
+#auth-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  z-index: 160;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#auth-modal.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+/* Individual auth panels */
+.auth-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 380px;
+  max-width: 90vw;
+  padding: 40px 32px 32px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.auth-panel.active {
+  display: flex;
+}
+
+/* Logo / Title inside modal */
+.auth-logo {
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+/* Field group */
+.auth-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Inputs and select */
+.auth-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #e8e8e8;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.25s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.auth-input:focus {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Select (dropdown) specific */
+select.auth-input {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.35);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+select.auth-input:has(option:checked:not([disabled])) {
+  color: #e8e8e8;
+}
+
+select.auth-input option {
+  background: #1a1a1e;
+  color: #e8e8e8;
+}
+
+/* Date input */
+input[type="date"].auth-input {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+input[type="date"].auth-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* Terms checkbox */
+.auth-terms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 0.82rem;
+  color: #9a9a9a;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.auth-terms input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.auth-terms a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-terms a:hover {
+  color: #d0d0d0;
+}
+
+/* Primary auth button */
+.auth-btn {
+  width: 100%;
+  height: 48px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #0a0a0a;
+  background: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.auth-btn:hover {
+  transform: scale(1.03);
+  filter: brightness(1.08);
+}
+
+.auth-btn:active {
+  transform: scale(0.98);
+}
+
+/* Switch link (login ↔ signup) */
+.auth-switch {
+  font-size: 0.82rem;
+  color: #7a7a7a;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
 }
