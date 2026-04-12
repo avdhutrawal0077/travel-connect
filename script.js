@@ -5,520 +5,587 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // ───────── Three.js Scene Setup ─────────
+    // ───────── Three.js Scene Setup ─────────
 
-  var container = document.getElementById('canvas-container');
-  if (!container) return; // Guard: if landing layer missing, skip
+    var container = document.getElementById('canvas-container');
+    if (!container) return; // Guard: if landing layer missing, skip
 
-  // Enable scrolling for the landing page scroll-driven animation
-  // (body has overflow:hidden by default for the main app layout)
-  document.body.style.overflowY = 'auto';
-  document.body.style.overflowX = 'hidden';
+    // Enable scrolling for the landing page scroll-driven animation
+    // (body has overflow:hidden by default for the main app layout)
+    document.body.style.overflowY = 'auto';
+    document.body.style.overflowX = 'hidden';
 
-  // Hide the main app's SVG background during landing
-  var svgBgLayer = document.querySelector('.svg-bg-layer');
-  if (svgBgLayer) svgBgLayer.style.display = 'none';
+    // Hide the main app's SVG background during landing
+    var svgBgLayer = document.querySelector('.svg-bg-layer');
+    if (svgBgLayer) svgBgLayer.style.display = 'none';
 
-  // Hide floating chat system during landing (it lives outside .app-layout)
-  var floatingChat = document.getElementById('floatingChatSystem');
-  if (floatingChat) floatingChat.style.display = 'none';
+    // Hide floating chat system during landing (it lives outside .app-layout)
+    var floatingChat = document.getElementById('floatingChatSystem');
+    if (floatingChat) floatingChat.style.display = 'none';
 
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    2000
-  );
-  camera.position.z = 5;
-
-  var renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 1);
-  container.appendChild(renderer.domElement);
-
-  // ───────── Milky Way Skybox ─────────
-
-  (function createSkybox() {
-    var skyGeom = new THREE.SphereGeometry(900, 32, 32);
-    var skyMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      side: THREE.BackSide,
-      transparent: true,
-      opacity: 0.35,
-    });
-    var skybox = new THREE.Mesh(skyGeom, skyMat);
-    skybox.rotation.x = 0.3;
-    skybox.rotation.z = 0.15;
-    scene.add(skybox);
-
-    var skyLoader = new THREE.TextureLoader();
-    skyLoader.load(
-      'https://unpkg.com/three-globe@2.31.1/example/img/night-sky.png',
-      function (texture) {
-        skyMat.map = texture;
-        skyMat.needsUpdate = true;
-      },
-      undefined,
-      function () {
-        console.warn('Milky Way texture failed — starfield only.');
-      }
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
     );
-  })();
+    camera.position.z = 5;
 
-  // ───────── Layered Starfield ─────────
-
-  // Layer 1: small, dim, distant stars
-  (function (count, minSize, maxSize, opacity, radiusMin, radiusMax) {
-    var positions = new Float32Array(count * 3);
-    var colors = new Float32Array(count * 3);
-
-    for (var i = 0; i < count; i++) {
-      var radius = radiusMin + Math.random() * (radiusMax - radiusMin);
-      var theta = Math.random() * Math.PI * 2;
-      var phi = Math.acos(2 * Math.random() - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-
-      var temp = Math.random();
-      if (temp < 0.3) {
-        colors[i * 3] = 0.8 + Math.random() * 0.15;
-        colors[i * 3 + 1] = 0.85 + Math.random() * 0.1;
-        colors[i * 3 + 2] = 0.95 + Math.random() * 0.05;
-      } else if (temp < 0.6) {
-        var w = 0.9 + Math.random() * 0.1;
-        colors[i * 3] = w;
-        colors[i * 3 + 1] = w;
-        colors[i * 3 + 2] = w;
-      } else {
-        colors[i * 3] = 0.95 + Math.random() * 0.05;
-        colors[i * 3 + 1] = 0.88 + Math.random() * 0.1;
-        colors[i * 3 + 2] = 0.75 + Math.random() * 0.15;
-      }
-    }
-
-    var geom = new THREE.BufferGeometry();
-    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    var mat = new THREE.PointsMaterial({
-      size: minSize + (maxSize - minSize) * 0.5,
-      sizeAttenuation: true,
-      vertexColors: true,
-      transparent: true,
-      opacity: opacity,
-    });
-
-    scene.add(new THREE.Points(geom, mat));
-  })(3500, 0.4, 1.0, 0.5, 300, 800);
-
-  // Layer 2: brighter highlight stars
-  (function (count, minSize, maxSize, opacity, radiusMin, radiusMax) {
-    var positions = new Float32Array(count * 3);
-    var colors = new Float32Array(count * 3);
-
-    for (var i = 0; i < count; i++) {
-      var radius = radiusMin + Math.random() * (radiusMax - radiusMin);
-      var theta = Math.random() * Math.PI * 2;
-      var phi = Math.acos(2 * Math.random() - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-
-      var bw = 0.9 + Math.random() * 0.1;
-      colors[i * 3] = bw;
-      colors[i * 3 + 1] = bw;
-      colors[i * 3 + 2] = 0.92 + Math.random() * 0.08;
-    }
-
-    var geom = new THREE.BufferGeometry();
-    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    var mat = new THREE.PointsMaterial({
-      size: minSize + (maxSize - minSize) * 0.5,
-      sizeAttenuation: true,
-      vertexColors: true,
-      transparent: true,
-      opacity: opacity,
-    });
-
-    scene.add(new THREE.Points(geom, mat));
-  })(600, 1.2, 2.2, 0.7, 250, 700);
-
-  // ───────── Lighting ─────────
-
-  var ambientLight = new THREE.AmbientLight(0x222233, 0.12);
-  scene.add(ambientLight);
-
-  var sunLight = new THREE.DirectionalLight(0xfff5e6, 1.6);
-  sunLight.position.set(5, 2, 4);
-  scene.add(sunLight);
-
-  // ───────── Earth Sphere ─────────
-
-  var earthRadius = 1.6;
-  var geometry = new THREE.SphereGeometry(earthRadius, 64, 64);
-
-  var material = new THREE.MeshPhongMaterial({
-    color: 0x2255aa,
-    emissive: 0x0a0a14,
-    emissiveIntensity: 0.08,
-    shininess: 25,
-    specular: 0x333333,
-  });
-
-  var earth = new THREE.Mesh(geometry, material);
-  earth.scale.set(1.0, 1.0, 1.0);
-  scene.add(earth);
-
-  // Load 2K Earth texture
-  var textureLoader = new THREE.TextureLoader();
-  textureLoader.load(
-    'https://unpkg.com/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
-    function (texture) {
-      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      material.map = texture;
-      material.color.set(0xffffff);
-      material.emissive.set(0x050510);
-      material.needsUpdate = true;
-    },
-    undefined,
-    function () {
-      console.warn('Earth texture failed to load — using procedural material.');
-    }
-  );
-
-  // ───────── Rotation State ─────────
-  var rotationState = { speed: 0.0015 };
-
-  // ───────── Responsive Resize ─────────
-
-  function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-  window.addEventListener('resize', onResize);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 1);
+    container.appendChild(renderer.domElement);
 
-  // ───────── Render Loop ─────────
+    // ───────── Milky Way Skybox ─────────
 
-  var landingActive = true;
+    (function createSkybox() {
+        var skyGeom = new THREE.SphereGeometry(900, 32, 32);
+        var skyMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.35,
+        });
+        var skybox = new THREE.Mesh(skyGeom, skyMat);
+        skybox.rotation.x = 0.3;
+        skybox.rotation.z = 0.15;
+        scene.add(skybox);
 
-  function animate() {
-    if (!landingActive) return; // Stop render loop after transition
-    requestAnimationFrame(animate);
-    earth.rotation.y += rotationState.speed;
-    renderer.render(scene, camera);
-  }
-  animate();
+        var skyLoader = new THREE.TextureLoader();
+        skyLoader.load(
+            'https://unpkg.com/three-globe@2.31.1/example/img/night-sky.png',
+            function (texture) {
+                skyMat.map = texture;
+                skyMat.needsUpdate = true;
+            },
+            undefined,
+            function () {
+                console.warn('Milky Way texture failed — starfield only.');
+            }
+        );
+    })();
 
-  // ───────── GSAP ScrollTrigger Timeline ─────────
+    // ───────── Layered Starfield ─────────
 
-  gsap.registerPlugin(ScrollTrigger);
+    // Layer 1: small, dim, distant stars
+    (function (count, minSize, maxSize, opacity, radiusMin, radiusMax) {
+        var positions = new Float32Array(count * 3);
+        var colors = new Float32Array(count * 3);
 
-  var cards = document.querySelectorAll('#overlay .info-card');
-  var ctaButtons = document.getElementById('cta-buttons');
+        for (var i = 0; i < count; i++) {
+            var radius = radiusMin + Math.random() * (radiusMax - radiusMin);
+            var theta = Math.random() * Math.PI * 2;
+            var phi = Math.acos(2 * Math.random() - 1);
 
-  // Master timeline — scrub: true for direct 1:1 scroll tracking
-  var tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: '#scroll-container',
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: true,
-    },
-  });
+            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[i * 3 + 2] = radius * Math.cos(phi);
 
-  // ═══ EARTH ANIMATION — 0% to 50% ═══
+            var temp = Math.random();
+            if (temp < 0.3) {
+                colors[i * 3] = 0.8 + Math.random() * 0.15;
+                colors[i * 3 + 1] = 0.85 + Math.random() * 0.1;
+                colors[i * 3 + 2] = 0.95 + Math.random() * 0.05;
+            } else if (temp < 0.6) {
+                var w = 0.9 + Math.random() * 0.1;
+                colors[i * 3] = w;
+                colors[i * 3 + 1] = w;
+                colors[i * 3 + 2] = w;
+            } else {
+                colors[i * 3] = 0.95 + Math.random() * 0.05;
+                colors[i * 3 + 1] = 0.88 + Math.random() * 0.1;
+                colors[i * 3 + 2] = 0.75 + Math.random() * 0.15;
+            }
+        }
 
-  tl.to(earth.position, { y: -1.4,  duration: 0.25, ease: 'none' }, 0);
-  tl.to(earth.scale,    { x: 0.6, y: 0.6, z: 0.6, duration: 0.175, ease: 'none' }, 0);
+        var geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-  tl.to(earth.position, { y: -2.0,  duration: 0.125, ease: 'none' }, 0.25);
+        var mat = new THREE.PointsMaterial({
+            size: minSize + (maxSize - minSize) * 0.5,
+            sizeAttenuation: true,
+            vertexColors: true,
+            transparent: true,
+            opacity: opacity,
+        });
 
-  tl.to(earth.scale,    { x: 2.34, y: 1.81, z: 2.34, duration: 0.125, ease: 'none' }, 0.375);
-  tl.to(earth.position, { y: -3.4,  duration: 0.125, ease: 'none' }, 0.375);
-  tl.to(rotationState,  { speed: 0, duration: 0.125, ease: 'none' }, 0.375);
+        scene.add(new THREE.Points(geom, mat));
+    })(3500, 0.4, 1.0, 0.5, 300, 800);
 
-  // ═══ TITLE TEXT ═══
+    // Layer 2: brighter highlight stars
+    (function (count, minSize, maxSize, opacity, radiusMin, radiusMax) {
+        var positions = new Float32Array(count * 3);
+        var colors = new Float32Array(count * 3);
 
-  var titleEl = document.getElementById('title-text');
+        for (var i = 0; i < count; i++) {
+            var radius = radiusMin + Math.random() * (radiusMax - radiusMin);
+            var theta = Math.random() * Math.PI * 2;
+            var phi = Math.acos(2 * Math.random() - 1);
 
-  gsap.set(titleEl, { top: '50%', scale: 0.15, opacity: 0, xPercent: -50, yPercent: -50 });
+            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[i * 3 + 2] = radius * Math.cos(phi);
 
-  tl.to(titleEl, {
-    top: '14%',
-    scale: 1,
-    opacity: 1,
-    duration: 0.15,
-    ease: 'power2.out',
-    onUpdate: function () {
-      var currentTop = parseFloat(gsap.getProperty(titleEl, 'top'));
-      var viewH = window.innerHeight;
-      if (currentTop < viewH * 0.35) {
-        titleEl.style.zIndex = '5';
-      } else {
-        titleEl.style.zIndex = '1';
-      }
-    },
-  }, 0);
+            var bw = 0.9 + Math.random() * 0.1;
+            colors[i * 3] = bw;
+            colors[i * 3 + 1] = bw;
+            colors[i * 3 + 2] = 0.92 + Math.random() * 0.08;
+        }
 
-  tl.to(titleEl, {
-    opacity: 0,
-    top: '8%',
-    scale: 0.9,
-    duration: 0.08,
-    ease: 'power2.in',
-    onComplete: function () { titleEl.style.zIndex = '1'; },
-  }, 0.42);
+        var geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-  // ═══ INFO CARDS — 52% to 88% ═══
+        var mat = new THREE.PointsMaterial({
+            size: minSize + (maxSize - minSize) * 0.5,
+            sizeAttenuation: true,
+            vertexColors: true,
+            transparent: true,
+            opacity: opacity,
+        });
 
-  var cardCount = cards.length;
-  var cardsStart = 0.52;
-  var cardsEnd = 0.88;
-  var totalCardRange = cardsEnd - cardsStart;
-  var perCard = totalCardRange / cardCount;
+        scene.add(new THREE.Points(geom, mat));
+    })(600, 1.2, 2.2, 0.7, 250, 700);
 
-  var enterDur = 0.025;
-  var exitDur = 0.02;
+    // ───────── Lighting ─────────
 
-  cards.forEach(function (card, i) {
-    var cardStart = cardsStart + i * perCard;
-    var cardEnd = cardStart + perCard;
+    var ambientLight = new THREE.AmbientLight(0x222233, 0.12);
+    scene.add(ambientLight);
 
-    var enterX = (i % 2 === 0) ? -80 : 80;
+    var sunLight = new THREE.DirectionalLight(0xfff5e6, 1.6);
+    sunLight.position.set(5, 2, 4);
+    scene.add(sunLight);
+
+    // ───────── Earth Sphere ─────────
+
+    var earthRadius = 1.6;
+    var geometry = new THREE.SphereGeometry(earthRadius, 64, 64);
+
+    var material = new THREE.MeshPhongMaterial({
+        color: 0x2255aa,
+        emissive: 0x0a0a14,
+        emissiveIntensity: 0.08,
+        shininess: 25,
+        specular: 0x333333,
+    });
+
+    var earth = new THREE.Mesh(geometry, material);
+    earth.scale.set(1.0, 1.0, 1.0);
+    scene.add(earth);
+
+    // Load 2K Earth texture
+    var textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+        'https://unpkg.com/three-globe@2.31.1/example/img/earth-blue-marble.jpg',
+        function (texture) {
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            material.map = texture;
+            material.color.set(0xffffff);
+            material.emissive.set(0x050510);
+            material.needsUpdate = true;
+        },
+        undefined,
+        function () {
+            console.warn('Earth texture failed to load — using procedural material.');
+        }
+    );
+
+    // ───────── Rotation State ─────────
+    var rotationState = { speed: 0.0015 };
+
+    // ───────── Responsive Resize ─────────
+
+    function onResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', onResize);
+
+    // ───────── Render Loop ─────────
+
+    var landingActive = true;
+
+    function animate() {
+        if (!landingActive) return; // Stop render loop after transition
+        requestAnimationFrame(animate);
+        earth.rotation.y += rotationState.speed;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // ───────── GSAP ScrollTrigger Timeline ─────────
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    var cards = document.querySelectorAll('#overlay .info-card');
+    var ctaButtons = document.getElementById('cta-buttons');
+
+    // Master timeline — scrub: true for direct 1:1 scroll tracking
+    var tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: '#scroll-container',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: true,
+        },
+    });
+
+    // ═══ EARTH ANIMATION — 0% to 50% ═══
+
+    tl.to(earth.position, { y: -1.4, duration: 0.25, ease: 'none' }, 0);
+    tl.to(earth.scale, { x: 0.6, y: 0.6, z: 0.6, duration: 0.175, ease: 'none' }, 0);
+
+    tl.to(earth.position, { y: -2.0, duration: 0.125, ease: 'none' }, 0.25);
+
+    tl.to(earth.scale, { x: 2.34, y: 1.81, z: 2.34, duration: 0.125, ease: 'none' }, 0.375);
+    tl.to(earth.position, { y: -3.4, duration: 0.125, ease: 'none' }, 0.375);
+    tl.to(rotationState, { speed: 0, duration: 0.125, ease: 'none' }, 0.375);
+
+    // ═══ TITLE TEXT ═══
+
+    var titleEl = document.getElementById('title-text');
+
+    gsap.set(titleEl, { top: '50%', scale: 0.15, opacity: 0, xPercent: -50, yPercent: -50 });
+
+    tl.to(titleEl, {
+        top: '14%',
+        scale: 1,
+        opacity: 1,
+        duration: 0.15,
+        ease: 'power2.out',
+        onUpdate: function () {
+            var currentTop = parseFloat(gsap.getProperty(titleEl, 'top'));
+            var viewH = window.innerHeight;
+            if (currentTop < viewH * 0.35) {
+                titleEl.style.zIndex = '5';
+            } else {
+                titleEl.style.zIndex = '1';
+            }
+        },
+    }, 0);
+
+    tl.to(titleEl, {
+        opacity: 0,
+        top: '8%',
+        scale: 0.9,
+        duration: 0.08,
+        ease: 'power2.in',
+        onComplete: function () { titleEl.style.zIndex = '1'; },
+    }, 0.42);
+
+    // ═══ INFO CARDS — 52% to 88% ═══
+
+    var cardCount = cards.length;
+    var cardsStart = 0.52;
+    var cardsEnd = 0.88;
+    var totalCardRange = cardsEnd - cardsStart;
+    var perCard = totalCardRange / cardCount;
+
+    var enterDur = 0.025;
+    var exitDur = 0.02;
+
+    cards.forEach(function (card, i) {
+        var cardStart = cardsStart + i * perCard;
+        var cardEnd = cardStart + perCard;
+
+        var enterX = (i % 2 === 0) ? -80 : 80;
+
+        tl.fromTo(
+            card,
+            { opacity: 0, x: enterX, y: 30 },
+            { opacity: 1, x: 0, y: 0, duration: enterDur, ease: 'power1.out' },
+            cardStart
+        );
+
+        tl.to(
+            card,
+            { opacity: 0, y: -30, duration: exitDur, ease: 'power1.in' },
+            cardEnd - exitDur
+        );
+    });
+
+    // ═══ CTA BUTTONS — 90% to 97% ═══
 
     tl.fromTo(
-      card,
-      { opacity: 0, x: enterX, y: 30 },
-      { opacity: 1, x: 0, y: 0, duration: enterDur, ease: 'power1.out' },
-      cardStart
+        ctaButtons,
+        { opacity: 0, y: 24 },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 0.07,
+            ease: 'power1.out',
+            onStart: function () { ctaButtons.classList.add('active'); },
+            onReverseComplete: function () { ctaButtons.classList.remove('active'); },
+        },
+        0.92
     );
 
-    tl.to(
-      card,
-      { opacity: 0, y: -30, duration: exitDur, ease: 'power1.in' },
-      cardEnd - exitDur
-    );
-  });
+    // ═══════════════════════════════════════════
+    // AUTH MODAL SYSTEM
+    // ═══════════════════════════════════════════
 
-  // ═══ CTA BUTTONS — 90% to 97% ═══
+    var authBackdrop = document.getElementById('auth-backdrop');
+    var authModal = document.getElementById('auth-modal');
+    var panelLogin = document.getElementById('panel-login');
+    var panelForgot = document.getElementById('panel-forgot');
+    var panelNewpass = document.getElementById('panel-newpass');
+    var panelSignup1 = document.getElementById('panel-signup-1');
+    var panelSignup2 = document.getElementById('panel-signup-2');
 
-  tl.fromTo(
-    ctaButtons,
-    { opacity: 0, y: 24 },
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.07,
-      ease: 'power1.out',
-      onStart: function () { ctaButtons.classList.add('active'); },
-      onReverseComplete: function () { ctaButtons.classList.remove('active'); },
-    },
-    0.92
-  );
-
-  // ═══════════════════════════════════════════
-  // AUTH MODAL SYSTEM
-  // ═══════════════════════════════════════════
-
-  var authBackdrop = document.getElementById('auth-backdrop');
-  var authModal = document.getElementById('auth-modal');
-  var panelLogin = document.getElementById('panel-login');
-  var panelSignup1 = document.getElementById('panel-signup-1');
-  var panelSignup2 = document.getElementById('panel-signup-2');
-
-  function showPanel(panel) {
-    [panelLogin, panelSignup1, panelSignup2].forEach(function (p) {
-      p.classList.remove('active');
-    });
-    panel.classList.add('active');
-  }
-
-  function openAuth(panel) {
-    showPanel(panel);
-    authBackdrop.classList.add('visible');
-    authModal.classList.add('visible');
-  }
-
-  function closeAuth() {
-    authBackdrop.classList.remove('visible');
-    authModal.classList.remove('visible');
-  }
-
-  function switchPanel(from, to) {
-    gsap.to(authModal, {
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.15,
-      ease: 'power2.in',
-      onComplete: function () {
-        showPanel(to);
-        gsap.to(authModal, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.2,
-          ease: 'power2.out',
+    function showPanel(panel) {
+        [panelLogin, panelForgot, panelNewpass, panelSignup1, panelSignup2].forEach(function (p) {
+            p.classList.remove('active');
         });
-      },
-    });
-  }
+        panel.classList.add('active');
+    }
 
-  // ── CTA button handlers ──
-  document.getElementById('btn-login').addEventListener('click', function (e) {
-    e.preventDefault();
-    openAuth(panelLogin);
-  });
+    function openAuth(panel) {
+        showPanel(panel);
+        authBackdrop.classList.add('visible');
+        authModal.classList.add('visible');
+    }
 
-  document.getElementById('btn-signup').addEventListener('click', function (e) {
-    e.preventDefault();
-    openAuth(panelSignup1);
-  });
-
-  // ── Panel navigation links ──
-  document.getElementById('go-signup').addEventListener('click', function (e) {
-    e.preventDefault();
-    switchPanel(panelLogin, panelSignup1);
-  });
-
-  document.getElementById('go-login-1').addEventListener('click', function (e) {
-    e.preventDefault();
-    switchPanel(panelSignup1, panelLogin);
-  });
-
-  document.getElementById('go-login-2').addEventListener('click', function (e) {
-    e.preventDefault();
-    switchPanel(panelSignup2, panelLogin);
-  });
-
-  // ── Signup step navigation ──
-  document.getElementById('signup-next').addEventListener('click', function (e) {
-    e.preventDefault();
-    switchPanel(panelSignup1, panelSignup2);
-  });
-
-  // ── Backdrop click to close ──
-  authBackdrop.addEventListener('click', function () {
-    closeAuth();
-  });
-
-  // ═══════════════════════════════════════════
-  // POST-AUTH TRANSITION
-  // Landing → Loader → Main App
-  // ═══════════════════════════════════════════
-
-  var loaderTriggered = false;
-
-  function triggerLoader() {
-    if (loaderTriggered) return;
-    loaderTriggered = true;
-
-    var overlay = document.getElementById('overlay');
-    var scrollContainer = document.getElementById('scroll-container');
-    var loader = document.getElementById('loader');
-    var appLayout = document.querySelector('.app-layout');
-    var svgBg = document.querySelector('.svg-bg-layer');
-
-    var exitTl = gsap.timeline();
-
-    // 1. Fade out auth modal
-    exitTl.to(authModal, {
-      opacity: 0,
-      scale: 0.92,
-      duration: 0.4,
-      ease: 'power2.inOut',
-    }, 0);
-
-    exitTl.to(authBackdrop, {
-      opacity: 0,
-      duration: 0.4,
-      ease: 'power2.inOut',
-      onComplete: function () {
+    function closeAuth() {
         authBackdrop.classList.remove('visible');
         authModal.classList.remove('visible');
-      },
-    }, 0);
+    }
 
-    // 2. Fade out landing UI
-    exitTl.to('#title-text', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
-    exitTl.to('#card-container', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
-    exitTl.to('#cta-buttons', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+    function switchPanel(from, to) {
+        gsap.to(authModal, {
+            opacity: 0,
+            scale: 0.95,
+            duration: 0.15,
+            ease: 'power2.in',
+            onComplete: function () {
+                showPanel(to);
+                gsap.to(authModal, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.2,
+                    ease: 'power2.out',
+                });
+            },
+        });
+    }
 
-    // 3. Dim canvas
-    exitTl.to('#canvas-container', {
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power2.inOut',
-    }, 0);
+    // ── CTA button handlers ──
+    document.getElementById('btn-login').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth(panelLogin);
+    });
 
-    // 4. Show "Launching app…" loader after 0.6s
-    exitTl.to(loader, {
-      opacity: 1,
-      duration: 0.5,
-      ease: 'power2.inOut',
-    }, 0.6);
+    document.getElementById('btn-signup').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth(panelSignup1);
+    });
 
-    // 5. After loader visible, hide landing → show main app
-    exitTl.call(function () {
-      // Hide landing elements completely
-      overlay.style.display = 'none';
-      scrollContainer.style.display = 'none';
-      loader.style.pointerEvents = 'none';
+    // ── Top-right landing nav buttons ──
+    document.getElementById('nav-login').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth(panelLogin);
+    });
 
-      // Stop Three.js render loop
-      landingActive = false;
+    document.getElementById('nav-signup').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth(panelSignup1);
+    });
 
-      // Kill all ScrollTrigger instances (clean up scroll driver)
-      ScrollTrigger.getAll().forEach(function (st) { st.kill(); });
+    // ── Panel navigation links ──
+    document.getElementById('go-signup').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelLogin, panelSignup1);
+    });
 
-      // Restore main app scroll behavior (overflow:hidden — main-content handles its own scroll)
-      document.body.style.overflow = 'hidden';
-    }, null, null, 1.3);
+    document.getElementById('go-login-1').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelSignup1, panelLogin);
+    });
 
-    // 6. Fade out loader and show main app
-    exitTl.to(loader, {
-      opacity: 0,
-      duration: 0.4,
-      ease: 'power2.inOut',
-      onComplete: function () {
-        loader.style.display = 'none';
-      },
-    }, 1.5);
+    document.getElementById('go-login-2').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelSignup2, panelLogin);
+    });
 
-    // 7. Show app layout with fade-in
-    exitTl.call(function () {
-      if (svgBg) svgBg.style.display = '';
-      appLayout.style.display = 'grid';
-      appLayout.style.opacity = '0';
+    // ── Forgot password navigation ──
+    document.getElementById('go-forgot').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelLogin, panelForgot);
+    });
 
-      // Show floating chat system
-      var fc = document.getElementById('floatingChatSystem');
-      if (fc) fc.style.display = '';
+    document.getElementById('go-login-forgot').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelForgot, panelLogin);
+    });
 
-      gsap.to(appLayout, {
-        opacity: 1,
-        duration: 0.5,
-        ease: 'power2.out',
-      });
-    }, null, null, 1.6);
-  }
+    // ── OTP Verify → New Password panel ──
+    document.getElementById('forgot-verify').addEventListener('click', function (e) {
+        e.preventDefault();
+        var email = document.getElementById('forgot-email').value.trim();
+        var otp = document.getElementById('forgot-otp').value.trim();
+        if (!email || !otp) return;
+        // Frontend-only: accept any non-empty OTP
+        switchPanel(panelForgot, panelNewpass);
+    });
 
-  // ── Auth submit handlers ──
-  document.getElementById('login-submit').addEventListener('click', function (e) {
-    e.preventDefault();
-    triggerLoader();
-  });
+    // ── New Password → Confirm & go to Login ──
+    document.getElementById('newpass-submit').addEventListener('click', function (e) {
+        e.preventDefault();
+        var pass = document.getElementById('newpass-password').value;
+        var confirm = document.getElementById('newpass-confirm').value;
+        var errorEl = document.getElementById('newpass-error');
 
-  document.getElementById('signup-submit').addEventListener('click', function (e) {
-    e.preventDefault();
-    triggerLoader();
-  });
+        errorEl.textContent = '';
+
+        if (!pass || !confirm) {
+            errorEl.textContent = 'Please fill in both fields';
+            return;
+        }
+        if (pass !== confirm) {
+            errorEl.textContent = 'Passwords do not match';
+            return;
+        }
+
+        // Clear fields and switch to login
+        document.getElementById('newpass-password').value = '';
+        document.getElementById('newpass-confirm').value = '';
+        document.getElementById('forgot-email').value = '';
+        document.getElementById('forgot-otp').value = '';
+        switchPanel(panelNewpass, panelLogin);
+    });
+
+    document.getElementById('go-login-newpass').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('newpass-error').textContent = '';
+        switchPanel(panelNewpass, panelLogin);
+    });
+
+    // ── Signup step navigation ──
+    document.getElementById('signup-next').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelSignup1, panelSignup2);
+    });
+
+    // ── Backdrop click to close ──
+    authBackdrop.addEventListener('click', function () {
+        closeAuth();
+    });
+
+    // ═══════════════════════════════════════════
+    // POST-AUTH TRANSITION
+    // Landing → Loader → Main App
+    // ═══════════════════════════════════════════
+
+    var loaderTriggered = false;
+
+    function triggerLoader() {
+        if (loaderTriggered) return;
+        loaderTriggered = true;
+
+        var overlay = document.getElementById('overlay');
+        var scrollContainer = document.getElementById('scroll-container');
+        var loader = document.getElementById('loader');
+        var appLayout = document.querySelector('.app-layout');
+        var svgBg = document.querySelector('.svg-bg-layer');
+
+        var exitTl = gsap.timeline();
+
+        // 1. Fade out auth modal
+        exitTl.to(authModal, {
+            opacity: 0,
+            scale: 0.92,
+            duration: 0.4,
+            ease: 'power2.inOut',
+        }, 0);
+
+        exitTl.to(authBackdrop, {
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power2.inOut',
+            onComplete: function () {
+                authBackdrop.classList.remove('visible');
+                authModal.classList.remove('visible');
+            },
+        }, 0);
+
+        // 2. Fade out landing UI
+        exitTl.to('#title-text', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+        exitTl.to('#card-container', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+        exitTl.to('#cta-buttons', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+        exitTl.to('#landing-nav', { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+
+        // 3. Dim canvas
+        exitTl.to('#canvas-container', {
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power2.inOut',
+        }, 0);
+
+        // 4. Show "Launching app…" loader after 0.6s
+        exitTl.to(loader, {
+            opacity: 1,
+            duration: 0.5,
+            ease: 'power2.inOut',
+        }, 0.6);
+
+        // 5. After loader visible, hide landing → show main app
+        exitTl.call(function () {
+            // Hide landing elements completely
+            overlay.style.display = 'none';
+            scrollContainer.style.display = 'none';
+            loader.style.pointerEvents = 'none';
+
+            // Stop Three.js render loop
+            landingActive = false;
+
+            // Kill all ScrollTrigger instances (clean up scroll driver)
+            ScrollTrigger.getAll().forEach(function (st) { st.kill(); });
+
+            // Restore main app scroll behavior (overflow:hidden — main-content handles its own scroll)
+            document.body.style.overflow = 'hidden';
+        }, null, null, 1.3);
+
+        // 6. Fade out loader and show main app
+        exitTl.to(loader, {
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power2.inOut',
+            onComplete: function () {
+                loader.style.display = 'none';
+            },
+        }, 1.5);
+
+        // 7. Show app layout with fade-in
+        exitTl.call(function () {
+            if (svgBg) svgBg.style.display = '';
+            appLayout.style.display = 'grid';
+            appLayout.style.opacity = '0';
+
+            // Show floating chat system
+            var fc = document.getElementById('floatingChatSystem');
+            if (fc) fc.style.display = '';
+
+            gsap.to(appLayout, {
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out',
+            });
+        }, null, null, 1.6);
+    }
+
+    // ── Auth submit handlers ──
+    document.getElementById('login-submit').addEventListener('click', function (e) {
+        e.preventDefault();
+        triggerLoader();
+    });
+
+    document.getElementById('signup-submit').addEventListener('click', function (e) {
+        e.preventDefault();
+        triggerLoader();
+    });
 
 }); // end DOMContentLoaded
 
@@ -2898,6 +2965,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // ============================================
     // Completed Rides — localStorage helpers
     // ============================================
+
+    // Clear any stale history data on fresh load
+    localStorage.removeItem('completed_rides');
+
     function getCompletedRides() {
         return JSON.parse(localStorage.getItem('completed_rides') || '[]');
     }
@@ -2935,7 +3006,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
                 <h3 class="rating-modal-title">Rate your ride experience</h3>
                 <div class="rating-stars" id="ratingStarsContainer">
-                    ${[1,2,3,4,5].map(i => `<button class="rating-star" data-value="${i}">${starSVG(false)}</button>`).join('')}
+                    ${[1, 2, 3, 4, 5].map(i => `<button class="rating-star" data-value="${i}">${starSVG(false)}</button>`).join('')}
                 </div>
                 <button class="rating-submit-btn" id="ratingSubmitBtn" disabled>Submit Rating</button>
             </div>
@@ -3311,10 +3382,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     ${ride.ride_rating ? `<div class="history-rating">
                         <span class="history-rating-label">Rating:</span>
                         <span class="history-rating-stars">
-                            ${[1,2,3,4,5].map(i => i <= ride.ride_rating
-                                ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
-                                : '<svg class="empty-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
-                            ).join('')}
+                            ${[1, 2, 3, 4, 5].map(i => i <= ride.ride_rating
+                ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+                : '<svg class="empty-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+            ).join('')}
                         </span>
                         <span class="history-rating-value">(${ride.ride_rating}/5)</span>
                     </div>` : ''}
@@ -3986,5 +4057,623 @@ document.addEventListener("DOMContentLoaded", function () {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
+    }
+})();
+
+/* =========================================================
+   Edit Profile System
+   Frontend-only profile editing with accent theme toggle,
+   live preview, cover photo, avatar styles, emoji picker,
+   density toggle, and animations toggle
+   ========================================================= */
+(function () {
+    'use strict';
+
+    // ── Defaults ──
+    const DEFAULTS = {
+        name: 'Yogiraj Kulkarni',
+        bio: 'Exploring the world, one ride at a time 🌍',
+        initials: 'YK',
+        accent: 'blue',
+        avatarSrc: '',
+        coverSrc: '',
+        avatarStyle: 'solid',
+        density: 'spacious',
+        animations: true,
+    };
+
+    // ── Accent color map ──
+    const ACCENT_MAP = {
+        blue: { main: 'rgba(100,149,237,0.9)', bg: 'rgba(100,149,237,0.3)', border: 'rgba(100,149,237,0.4)' },
+        purple: { main: 'rgba(168,85,247,0.9)', bg: 'rgba(168,85,247,0.3)', border: 'rgba(168,85,247,0.4)' },
+        emerald: { main: 'rgba(52,211,153,0.9)', bg: 'rgba(52,211,153,0.3)', border: 'rgba(52,211,153,0.4)' },
+        rose: { main: 'rgba(251,113,133,0.9)', bg: 'rgba(251,113,133,0.3)', border: 'rgba(251,113,133,0.4)' },
+        amber: { main: 'rgba(251,191,36,0.9)', bg: 'rgba(251,191,36,0.3)', border: 'rgba(251,191,36,0.4)' },
+        cyan: { main: 'rgba(34,211,238,0.9)', bg: 'rgba(34,211,238,0.3)', border: 'rgba(34,211,238,0.4)' },
+    };
+
+    const BIO_MAX = 150;
+
+    // ── Session state ──
+    let currentState = { ...DEFAULTS };
+
+    // ── DOM refs ──
+    const mainView = document.getElementById('accountMainView');
+    const editView = document.getElementById('editProfileView');
+    const editBtn = document.getElementById('editProfileBtn');
+    const backBtn = document.getElementById('editProfileBackBtn');
+    const saveBtn = document.getElementById('editSaveBtn');
+    const resetBtn = document.getElementById('editResetBtn');
+    const nameInput = document.getElementById('editNameInput');
+    const bioInput = document.getElementById('editBioInput');
+    const charCounter = document.getElementById('bioCharCounter');
+    const picInput = document.getElementById('profilePicInput');
+    const accentPicker = document.getElementById('accentPicker');
+
+    // Display elements (account page)
+    const nameDisplay = document.getElementById('accountNameDisplay');
+    const bioDisplay = document.getElementById('accountBioDisplay');
+    const avatarDisplay = document.getElementById('accountAvatarDisplay');
+    const avatarInitials = document.getElementById('avatarInitials');
+    const avatarImgDisp = document.getElementById('avatarImgDisplay');
+    const coverDisplay = document.getElementById('accountCoverDisplay');
+
+    // Edit view avatar
+    const editAvatarInit = document.getElementById('editAvatarInitials');
+    const editAvatarImg = document.getElementById('editAvatarImg');
+    const editAvatarCircle = document.getElementById('editAvatarCircle');
+
+    // Cover photo
+    const coverInput = document.getElementById('coverPicInput');
+    const coverUpload = document.getElementById('editCoverUpload');
+    const coverPreview = document.getElementById('editCoverPreview');
+
+    // Avatar style picker
+    const avatarStylePicker = document.getElementById('avatarStylePicker');
+    const avatarStyleGroup = document.getElementById('avatarStyleGroup');
+
+    // Emoji
+    const emojiToggle = document.getElementById('emojiToggleBtn');
+    const emojiPanel = document.getElementById('emojiPanel');
+
+    // Density & Animations
+    const animToggle = document.getElementById('animToggle');
+
+    // Live preview
+    const lpName = document.getElementById('lpName');
+    const lpBio = document.getElementById('lpBio');
+    const lpInitials = document.getElementById('lpInitials');
+    const lpAvatarImg = document.getElementById('lpAvatarImg');
+    const lpAvatar = document.getElementById('lpAvatar');
+    const lpCover = document.getElementById('lpCover');
+
+    // Post section elements (update on save)
+    const postUserAvatar = document.querySelector('.post-user-avatar');
+    const postUserName = document.querySelector('.post-user-name');
+
+    if (!mainView || !editView || !editBtn) return;
+
+    // ═══════════════════════════════════════
+    // VIEW TOGGLING
+    // ═══════════════════════════════════════
+    function showEditView() {
+        nameInput.value = currentState.name;
+        bioInput.value = currentState.bio;
+        updateCharCounter();
+
+        // Sync avatar
+        syncAvatarPreview(editAvatarImg, editAvatarInit, editAvatarCircle);
+        syncAvatarPreview(lpAvatarImg, lpInitials, lpAvatar);
+
+        // Sync cover preview
+        if (currentState.coverSrc) {
+            coverPreview.style.backgroundImage = `url(${currentState.coverSrc})`;
+            coverPreview.classList.add('has-image');
+            lpCover.style.backgroundImage = `url(${currentState.coverSrc})`;
+        }
+
+        // Sync accent picker
+        accentPicker.querySelectorAll('.accent-swatch').forEach(s => {
+            s.classList.toggle('active', s.dataset.accent === currentState.accent);
+        });
+
+        // Sync avatar style picker
+        if (avatarStylePicker) {
+            avatarStylePicker.querySelectorAll('.avatar-style-opt').forEach(o => {
+                o.classList.toggle('active', o.dataset.style === currentState.avatarStyle);
+            });
+            // Hide avatar style group if photo is set
+            avatarStyleGroup.style.display = currentState.avatarSrc ? 'none' : '';
+        }
+
+        // Sync density
+        document.querySelectorAll('.density-opt').forEach(o => {
+            o.classList.toggle('active', o.dataset.density === currentState.density);
+        });
+
+        // Sync animations toggle
+        if (animToggle) animToggle.checked = currentState.animations;
+
+        // Sync live preview
+        updateLivePreview();
+
+        mainView.style.display = 'none';
+        editView.classList.add('active');
+    }
+
+    function showMainView() {
+        editView.classList.remove('active');
+        mainView.style.display = '';
+        // Close emoji panel if open
+        if (emojiPanel) emojiPanel.classList.remove('open');
+    }
+
+    function syncAvatarPreview(imgEl, initialsEl, containerEl) {
+        if (currentState.avatarSrc) {
+            imgEl.src = currentState.avatarSrc;
+            imgEl.classList.add('visible');
+            initialsEl.style.display = 'none';
+        } else {
+            imgEl.classList.remove('visible');
+            initialsEl.style.display = '';
+            initialsEl.textContent = currentState.initials;
+        }
+        // Apply avatar style class
+        if (containerEl) {
+            containerEl.classList.remove('avatar-gradient', 'avatar-glass');
+            if (!currentState.avatarSrc && currentState.avatarStyle !== 'solid') {
+                containerEl.classList.add('avatar-' + currentState.avatarStyle);
+            }
+        }
+    }
+
+    editBtn.addEventListener('click', showEditView);
+    backBtn.addEventListener('click', showMainView);
+
+    // ═══════════════════════════════════════
+    // LIVE PREVIEW - Updates as user types
+    // ═══════════════════════════════════════
+    function updateLivePreview() {
+        if (lpName) lpName.textContent = nameInput.value || 'Your Name';
+        if (lpBio) lpBio.textContent = bioInput.value || 'Your bio will appear here...';
+
+        const initials = (nameInput.value || 'YK').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        if (lpInitials) lpInitials.textContent = initials;
+
+        // Avatar in preview
+        if (currentState.avatarSrc) {
+            lpAvatarImg.src = currentState.avatarSrc;
+            lpAvatarImg.classList.add('visible');
+            lpInitials.style.display = 'none';
+        } else {
+            lpAvatarImg.classList.remove('visible');
+            lpInitials.style.display = '';
+        }
+
+        // Avatar style in preview
+        if (lpAvatar) {
+            lpAvatar.classList.remove('avatar-gradient', 'avatar-glass');
+            if (!currentState.avatarSrc && currentState.avatarStyle !== 'solid') {
+                lpAvatar.classList.add('avatar-' + currentState.avatarStyle);
+            }
+        }
+
+        // Cover in preview
+        if (lpCover) {
+            lpCover.style.backgroundImage = currentState.coverSrc ? `url(${currentState.coverSrc})` : '';
+        }
+    }
+
+    nameInput.addEventListener('input', updateLivePreview);
+    bioInput.addEventListener('input', function () {
+        updateCharCounter();
+        updateLivePreview();
+    });
+
+    // ═══════════════════════════════════════
+    // BIO CHARACTER COUNTER
+    // ═══════════════════════════════════════
+    function updateCharCounter() {
+        const len = bioInput.value.length;
+        charCounter.textContent = `${len}/${BIO_MAX}`;
+        charCounter.classList.remove('near-limit', 'at-limit');
+        if (len >= BIO_MAX) {
+            charCounter.classList.add('at-limit');
+        } else if (len >= BIO_MAX * 0.85) {
+            charCounter.classList.add('near-limit');
+        }
+    }
+
+    // ═══════════════════════════════════════
+    // PROFILE PICTURE PREVIEW
+    // ═══════════════════════════════════════
+    picInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            currentState.avatarSrc = e.target.result;
+            syncAvatarPreview(editAvatarImg, editAvatarInit, editAvatarCircle);
+            // Hide avatar style group when photo is set
+            if (avatarStyleGroup) avatarStyleGroup.style.display = 'none';
+            updateLivePreview();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ═══════════════════════════════════════
+    // COVER PHOTO UPLOAD
+    // ═══════════════════════════════════════
+    if (coverUpload && coverInput) {
+        coverUpload.addEventListener('click', function () {
+            coverInput.click();
+        });
+
+        coverInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                currentState.coverSrc = e.target.result;
+                coverPreview.style.backgroundImage = `url(${e.target.result})`;
+                coverPreview.classList.add('has-image');
+                updateLivePreview();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ═══════════════════════════════════════
+    // AVATAR FALLBACK STYLE PICKER
+    // ═══════════════════════════════════════
+    if (avatarStylePicker) {
+        avatarStylePicker.addEventListener('click', function (e) {
+            const opt = e.target.closest('.avatar-style-opt');
+            if (!opt) return;
+
+            const style = opt.dataset.style;
+            currentState.avatarStyle = style;
+
+            avatarStylePicker.querySelectorAll('.avatar-style-opt').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+
+            // Apply to edit avatar preview
+            editAvatarCircle.classList.remove('avatar-gradient', 'avatar-glass');
+            if (style !== 'solid') {
+                editAvatarCircle.classList.add('avatar-' + style);
+            }
+
+            updateLivePreview();
+        });
+    }
+
+    // ═══════════════════════════════════════
+    // EMOJI PICKER
+    // ═══════════════════════════════════════
+    if (emojiToggle && emojiPanel) {
+        emojiToggle.addEventListener('click', function () {
+            emojiPanel.classList.toggle('open');
+        });
+
+        emojiPanel.addEventListener('click', function (e) {
+            const item = e.target.closest('.emoji-item');
+            if (!item) return;
+
+            const emoji = item.dataset.emoji;
+            if (!emoji) return;
+
+            // Insert at cursor position
+            const start = bioInput.selectionStart;
+            const end = bioInput.selectionEnd;
+            const text = bioInput.value;
+
+            if (text.length + emoji.length > BIO_MAX) return;
+
+            bioInput.value = text.substring(0, start) + emoji + text.substring(end);
+            bioInput.selectionStart = bioInput.selectionEnd = start + emoji.length;
+            bioInput.focus();
+
+            updateCharCounter();
+            updateLivePreview();
+        });
+
+        // Close emoji panel on outside click
+        document.addEventListener('click', function (e) {
+            if (!emojiPanel.contains(e.target) && e.target !== emojiToggle && !emojiToggle.contains(e.target)) {
+                emojiPanel.classList.remove('open');
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════
+    // ACCENT COLOR PICKER
+    // ═══════════════════════════════════════
+    accentPicker.addEventListener('click', function (e) {
+        const swatch = e.target.closest('.accent-swatch');
+        if (!swatch) return;
+
+        const accent = swatch.dataset.accent;
+        currentState.accent = accent;
+
+        accentPicker.querySelectorAll('.accent-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+
+        applyAccent(accent);
+    });
+
+    function applyAccent(accent) {
+        const colors = ACCENT_MAP[accent];
+        if (!colors) return;
+
+        document.documentElement.style.setProperty('--color-accent-blue', colors.main);
+
+        // Update avatar borders (only if solid style active and no photo)
+        if (currentState.avatarStyle === 'solid') {
+            const avatars = document.querySelectorAll('.account-avatar, .edit-avatar-circle');
+            avatars.forEach(a => {
+                a.style.background = `linear-gradient(135deg, ${colors.bg}, ${colors.bg.replace('0.3', '0.1')})`;
+                a.style.borderColor = colors.border;
+            });
+        }
+
+        // Update stat bar accent
+        const statBar = document.querySelector('.account-stats');
+        if (statBar) statBar.style.borderColor = colors.border.replace('0.4', '0.15');
+
+        // Update sidebar active glow
+        const activeNav = document.querySelector('.sidebar-nav-item.active');
+        if (activeNav) activeNav.style.textShadow = `0 0 12px ${colors.bg}`;
+    }
+
+    // ═══════════════════════════════════════
+    // UI DENSITY TOGGLE
+    // ═══════════════════════════════════════
+    document.querySelectorAll('.density-opt').forEach(opt => {
+        opt.addEventListener('click', function () {
+            const density = this.dataset.density;
+            currentState.density = density;
+
+            document.querySelectorAll('.density-opt').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+
+            document.body.classList.toggle('density-compact', density === 'compact');
+        });
+    });
+
+    // ═══════════════════════════════════════
+    // ANIMATIONS TOGGLE
+    // ═══════════════════════════════════════
+    if (animToggle) {
+        animToggle.addEventListener('change', function () {
+            currentState.animations = this.checked;
+            document.body.classList.toggle('no-animations', !this.checked);
+        });
+    }
+
+    // ═══════════════════════════════════════
+    // CENTRALIZED PROFILE PROPAGATION
+    // Single source of truth → updates ALL UI
+    // ═══════════════════════════════════════
+    const previewPostName = document.getElementById('previewPostName');
+
+    function propagateProfile() {
+        const s = currentState;
+
+        // ── 1. Account Page Header ──
+        if (nameDisplay) nameDisplay.textContent = s.name;
+        if (bioDisplay) bioDisplay.textContent = s.bio || 'No bio yet';
+        syncAvatarPreview(avatarImgDisp, avatarInitials, avatarDisplay);
+
+        // Cover photo
+        if (coverDisplay) {
+            if (s.coverSrc) {
+                coverDisplay.style.backgroundImage = `url(${s.coverSrc})`;
+                coverDisplay.classList.add('has-image');
+            } else {
+                coverDisplay.style.backgroundImage = '';
+                coverDisplay.classList.remove('has-image');
+            }
+        }
+
+        // ── 2. ALL user name displays ──
+        if (postUserName) postUserName.textContent = s.name;
+        if (previewPostName) previewPostName.textContent = s.name;
+
+        // ── 3. UNIVERSAL avatar propagation ──
+        // Update every [data-user-initials] span in the DOM
+        document.querySelectorAll('[data-user-initials]').forEach(el => {
+            el.textContent = s.initials;
+            el.style.display = s.avatarSrc ? 'none' : '';
+        });
+
+        // Update every [data-user-avatar-img] image in the DOM
+        document.querySelectorAll('[data-user-avatar-img]').forEach(img => {
+            if (s.avatarSrc) {
+                img.src = s.avatarSrc;
+                img.classList.add('visible');
+            } else {
+                img.src = '';
+                img.classList.remove('visible');
+            }
+        });
+
+        // ── 4. Edit View (sync avatar circle) ──
+        syncAvatarPreview(editAvatarImg, editAvatarInit, editAvatarCircle);
+
+        // ── 5. Live Preview Card ──
+        updateLivePreview();
+    }
+
+    // ═══════════════════════════════════════
+    // SAVE CHANGES
+    // ═══════════════════════════════════════
+    saveBtn.addEventListener('click', function () {
+        const newName = nameInput.value.trim();
+        const newBio = bioInput.value.trim();
+
+        if (!newName) {
+            nameInput.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+            nameInput.focus();
+            setTimeout(() => { nameInput.style.borderColor = ''; }, 1500);
+            return;
+        }
+
+        // Update centralized state
+        currentState.name = newName;
+        currentState.bio = newBio;
+        currentState.initials = newName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+        // Propagate to ALL UI components
+        propagateProfile();
+
+        // Save button feedback
+        saveBtn.classList.add('saved');
+        const origText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Saved!';
+        setTimeout(() => {
+            saveBtn.classList.remove('saved');
+            saveBtn.innerHTML = origText;
+        }, 1200);
+    });
+
+    // ═══════════════════════════════════════
+    // RESET
+    // ═══════════════════════════════════════
+    resetBtn.addEventListener('click', function () {
+        currentState = { ...DEFAULTS };
+
+        // Reset edit form fields
+        nameInput.value = DEFAULTS.name;
+        bioInput.value = DEFAULTS.bio;
+        updateCharCounter();
+
+        // Reset avatar upload
+        editAvatarImg.classList.remove('visible');
+        editAvatarImg.src = '';
+        editAvatarInit.style.display = '';
+        editAvatarInit.textContent = DEFAULTS.initials;
+        editAvatarCircle.classList.remove('avatar-gradient', 'avatar-glass');
+        picInput.value = '';
+
+        // Show avatar style group again
+        if (avatarStyleGroup) avatarStyleGroup.style.display = '';
+
+        // Reset avatar style picker
+        if (avatarStylePicker) {
+            avatarStylePicker.querySelectorAll('.avatar-style-opt').forEach(o => {
+                o.classList.toggle('active', o.dataset.style === DEFAULTS.avatarStyle);
+            });
+        }
+
+        // Reset cover upload
+        if (coverPreview) {
+            coverPreview.style.backgroundImage = '';
+            coverPreview.classList.remove('has-image');
+        }
+        if (coverInput) coverInput.value = '';
+
+        // Reset accent
+        accentPicker.querySelectorAll('.accent-swatch').forEach(s => {
+            s.classList.toggle('active', s.dataset.accent === DEFAULTS.accent);
+        });
+        applyAccent(DEFAULTS.accent);
+
+        // Reset density
+        document.querySelectorAll('.density-opt').forEach(o => {
+            o.classList.toggle('active', o.dataset.density === DEFAULTS.density);
+        });
+        document.body.classList.remove('density-compact');
+
+        // Reset animations
+        if (animToggle) animToggle.checked = true;
+        document.body.classList.remove('no-animations');
+
+        // Close emoji panel
+        if (emojiPanel) emojiPanel.classList.remove('open');
+
+        // Propagate defaults to ALL UI components
+        propagateProfile();
+
+        // Reset button feedback
+        resetBtn.style.borderColor = 'rgba(251, 191, 36, 0.5)';
+        setTimeout(() => { resetBtn.style.borderColor = ''; }, 600);
+    });
+
+})();
+
+/* =========================================================
+   Privacy & Security Panel
+   Toggles the Privacy sub-view within the Account page.
+   Frontend-only — state resets on page refresh.
+   ========================================================= */
+(function () {
+    'use strict';
+
+    const mainView = document.getElementById('accountMainView');
+    const editView = document.getElementById('editProfileView');
+    const privacyView = document.getElementById('privacyView');
+    const privacyBtn = document.getElementById('privacyBtn');
+    const privacyBack = document.getElementById('privacyBackBtn');
+
+    if (!mainView || !privacyView || !privacyBtn || !privacyBack) return;
+
+    // ── View toggling ──
+    function showPrivacyView() {
+        mainView.style.display = 'none';
+        if (editView) editView.classList.remove('active');
+        privacyView.classList.add('active');
+    }
+
+    function hidePrivacyView() {
+        privacyView.classList.remove('active');
+        mainView.style.display = '';
+    }
+
+    privacyBtn.addEventListener('click', showPrivacyView);
+    privacyBack.addEventListener('click', hidePrivacyView);
+
+    // ── Profile Visibility Toggle ──
+    const profileVisToggle = document.getElementById('profileVisToggle');
+    const profileVisBadge = document.getElementById('profileVisBadge');
+    const profileVisDesc = document.getElementById('profileVisDesc');
+
+    if (profileVisToggle) {
+        profileVisToggle.addEventListener('change', function () {
+            const isPublic = this.checked;
+
+            if (profileVisBadge) {
+                profileVisBadge.textContent = isPublic ? 'Public' : 'Private';
+                profileVisBadge.classList.toggle('public', isPublic);
+                profileVisBadge.classList.toggle('private', !isPublic);
+            }
+
+            if (profileVisDesc) {
+                profileVisDesc.textContent = isPublic
+                    ? 'Your profile is visible to everyone'
+                    : 'Only you can see your profile';
+            }
+        });
+    }
+
+    // ── Show Email Toggle ──
+    const showEmailToggle = document.getElementById('showEmailToggle');
+    const emailDisplay = document.getElementById('accountEmailDisplay');
+
+    if (showEmailToggle && emailDisplay) {
+        showEmailToggle.addEventListener('change', function () {
+            emailDisplay.classList.toggle('privacy-hidden', !this.checked);
+        });
+    }
+
+    // ── Show Phone Toggle ──
+    const showPhoneToggle = document.getElementById('showPhoneToggle');
+    const phoneDisplay = document.getElementById('accountPhoneDisplay');
+
+    if (showPhoneToggle && phoneDisplay) {
+        showPhoneToggle.addEventListener('change', function () {
+            phoneDisplay.classList.toggle('privacy-hidden', !this.checked);
+        });
     }
 })();

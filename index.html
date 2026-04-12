@@ -25,6 +25,12 @@
 
     <!-- Fixed overlay -->
     <div id="overlay">
+        <!-- Top-right navigation — visible without scrolling -->
+        <nav id="landing-nav">
+            <button class="landing-nav-btn" id="nav-login">Login</button>
+            <button class="landing-nav-btn landing-nav-btn--primary" id="nav-signup">Sign Up</button>
+        </nav>
+
         <!-- Three.js canvas injected here -->
         <div id="canvas-container"></div>
 
@@ -90,7 +96,31 @@
                 <span>I agree to the <a href="login_terms.html" target="_blank" rel="noopener">Terms</a></span>
             </label>
             <button class="auth-btn" id="login-submit">LOGIN</button>
+            <p class="auth-switch"><a href="#" id="go-forgot">Forgot Password?</a></p>
             <p class="auth-switch">Don't have an account? <a href="#" id="go-signup">Sign Up</a></p>
+        </div>
+
+        <!-- FORGOT PASSWORD PANEL -->
+        <div class="auth-panel" id="panel-forgot">
+            <div class="auth-logo">RESET PASSWORD</div>
+            <div class="auth-fields">
+                <input type="email" class="auth-input" id="forgot-email" placeholder="Email address" autocomplete="email" />
+                <input type="text" class="auth-input" id="forgot-otp" placeholder="Enter OTP" inputmode="numeric" />
+            </div>
+            <button class="auth-btn" id="forgot-verify">VERIFY</button>
+            <p class="auth-switch">Back to <a href="#" id="go-login-forgot">Login</a></p>
+        </div>
+
+        <!-- NEW PASSWORD PANEL -->
+        <div class="auth-panel" id="panel-newpass">
+            <div class="auth-logo">NEW PASSWORD</div>
+            <div class="auth-fields">
+                <input type="password" class="auth-input" id="newpass-password" placeholder="New Password" autocomplete="new-password" />
+                <input type="password" class="auth-input" id="newpass-confirm" placeholder="Confirm New Password" autocomplete="new-password" />
+            </div>
+            <p class="auth-error" id="newpass-error"></p>
+            <button class="auth-btn" id="newpass-submit">CONFIRM</button>
+            <p class="auth-switch">Back to <a href="#" id="go-login-newpass">Login</a></p>
         </div>
 
         <!-- SIGNUP STEP 1 -->
@@ -140,27 +170,8 @@
          MAIN APPLICATION UI (hidden until auth)
          ═══════════════════════════════════════════ -->
 
-    <!-- Subtle SVG Background Layer -->
     <div class="svg-bg-layer" aria-hidden="true">
-        <svg id="visual" viewBox="0 0 900 600" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"
-            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-            <defs>
-                <filter id="blur1" x="-10%" y="-10%" width="120%" height="120%">
-                    <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
-                    <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                    <feGaussianBlur stdDeviation="161" result="effect1_foregroundBlur"></feGaussianBlur>
-                </filter>
-            </defs>
-            <rect width="900" height="600" fill="#1B2A41"></rect>
-            <g filter="url(#blur1)">
-                <circle cx="18" cy="12" fill="#0B0F14" r="357"></circle>
-                <circle cx="678" cy="22" fill="#1B2A41" r="357"></circle>
-                <circle cx="655" cy="225" fill="#0B0F14" r="357"></circle>
-                <circle cx="214" cy="154" fill="#0B0F14" r="357"></circle>
-                <circle cx="628" cy="562" fill="#1B2A41" r="357"></circle>
-                <circle cx="34" cy="561" fill="#0B0F14" r="357"></circle>
-            </g>
-        </svg>
+        <!-- SVG background injected dynamically by theme controller -->
     </div>
 
     <div class="app-layout" style="display: none;">
@@ -307,55 +318,14 @@
                             </svg>
                             <input type="text" placeholder="Search messages" />
                         </div>
-                        <div class="inbox-list">
-                            <div class="inbox-item active" data-chat="arjun">
-                                <div class="inbox-avatar">AM</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Arjun Mehta</span>
-                                    <span class="inbox-preview">See you at 9 AM tomorrow!</span>
-                                </div>
-                                <span class="inbox-time">2m</span>
-                            </div>
-                            <div class="inbox-item" data-chat="priya">
-                                <div class="inbox-avatar">PS</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Priya Sharma</span>
-                                    <span class="inbox-preview">Thanks for the ride today 🚗</span>
-                                </div>
-                                <span class="inbox-time">1h</span>
-                            </div>
-                            <div class="inbox-item" data-chat="rohan">
-                                <div class="inbox-avatar">RK</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Rohan Kapoor</span>
-                                    <span class="inbox-preview">Can we reschedule to Thursday?</span>
-                                </div>
-                                <span class="inbox-time">3h</span>
-                            </div>
-                            <div class="inbox-item unread" data-chat="neha">
-                                <div class="inbox-avatar">NK</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Neha Kulkarni</span>
-                                    <span class="inbox-preview">I'll be waiting at the usual spot</span>
-                                </div>
-                                <span class="inbox-time">5h</span>
-                                <span class="inbox-badge">2</span>
-                            </div>
-                            <div class="inbox-item" data-chat="vikram">
-                                <div class="inbox-avatar">VR</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Vikram Rao</span>
-                                    <span class="inbox-preview">Great driving today!</span>
-                                </div>
-                                <span class="inbox-time">1d</span>
-                            </div>
-                            <div class="inbox-item" data-chat="ananya">
-                                <div class="inbox-avatar">AS</div>
-                                <div class="inbox-info">
-                                    <span class="inbox-name">Ananya Singh</span>
-                                    <span class="inbox-preview">Let me know when you reach</span>
-                                </div>
-                                <span class="inbox-time">2d</span>
+                        <div class="inbox-list" id="inboxList">
+                            <!-- Empty state -->
+                            <div class="chat-empty-state" id="inboxEmptyState">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <span class="empty-title">No conversations yet</span>
+                                <span class="empty-subtitle">Start a chat to connect with riders</span>
                             </div>
                         </div>
                     </div>
@@ -363,54 +333,25 @@
                     <!-- Right Panel - Chat Window -->
                     <div class="chat-window">
                         <div class="chat-header">
-                            <div class="chat-user">
-                                <div class="chat-user-avatar">AM</div>
+                            <div class="chat-user" id="chatUserHeader" style="display:none;">
+                                <div class="chat-user-avatar"></div>
                                 <div class="chat-user-info">
-                                    <span class="chat-user-name">Arjun Mehta</span>
-                                    <span class="chat-user-status">Active now</span>
+                                    <span class="chat-user-name"></span>
+                                    <span class="chat-user-status"></span>
                                 </div>
+                            </div>
+                            <div class="chat-empty-header" id="chatEmptyHeader">
+                                <span>Select a conversation</span>
                             </div>
                         </div>
                         <div class="chat-messages" id="chatMessages">
-                            <div class="message-date-separator"><span>Today</span></div>
-                            <div class="message received">
-                                <div class="message-bubble">Hey! Are we still on for tomorrow's ride to BKC?</div>
-                                <span class="message-time">9:30 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <div class="message-bubble">Yes, absolutely! I'll pick you up at 8:30 AM</div>
-                                <span class="message-time">9:32 AM</span>
-                            </div>
-                            <div class="message received">
-                                <div class="message-bubble">Perfect! Should I wait at the usual spot near the metro
-                                    station?</div>
-                                <span class="message-time">9:33 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <div class="message-bubble">Yes, same place as last time. I'll be in the white Honda
-                                    City</div>
-                                <span class="message-time">9:35 AM</span>
-                            </div>
-                            <div class="message received">
-                                <div class="message-bubble">Great! How much should I transfer for the ride?</div>
-                                <span class="message-time">9:36 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <div class="message-bubble">It's ₹45 for the bike ride, but since we're doing car
-                                    pooling with 2 more people, it'll be just ₹35 per person 👍</div>
-                                <span class="message-time">9:38 AM</span>
-                            </div>
-                            <div class="message received">
-                                <div class="message-bubble">That's a good deal! I'll pay you in the morning</div>
-                                <span class="message-time">9:40 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <div class="message-bubble">No worries! You can also pay via UPI if that's easier</div>
-                                <span class="message-time">9:41 AM</span>
-                            </div>
-                            <div class="message received">
-                                <div class="message-bubble">See you at 9 AM tomorrow!</div>
-                                <span class="message-time">9:42 AM</span>
+                            <!-- Empty state -->
+                            <div class="chat-empty-state" id="messagesEmptyState">
+                                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                </svg>
+                                <span class="empty-title">No messages</span>
+                                <span class="empty-subtitle">Select a chat or start a new conversation</span>
                             </div>
                         </div>
                         <div class="chat-input">
@@ -437,62 +378,284 @@
             <!-- ACCOUNT PAGE -->
             <div class="page-container" id="page-account">
                 <div class="page-content">
-                    <div class="account-header">
-                        <div class="account-avatar">YK</div>
-                        <div class="account-info">
-                            <h2 class="account-name">Yogiraj Kulkarni</h2>
-                            <p class="account-email">yogiraj@example.com</p>
+
+                    <!-- Main Account View -->
+                    <div id="accountMainView">
+                        <!-- Cover Photo Banner -->
+                        <div class="account-cover" id="accountCoverDisplay">
+                            <div class="cover-gradient"></div>
+                        </div>
+                        <div class="account-header">
+                            <div class="account-avatar" id="accountAvatarDisplay">
+                                <span class="avatar-initials" id="avatarInitials">YK</span>
+                                <img class="avatar-img" id="avatarImgDisplay" src="" alt="Profile" />
+                            </div>
+                            <div class="account-info">
+                                <h2 class="account-name" id="accountNameDisplay">Yogiraj Kulkarni</h2>
+                                <p class="account-bio" id="accountBioDisplay">Exploring the world, one ride at a time 🌍</p>
+                                <p class="account-email" id="accountEmailDisplay">yogiraj@example.com</p>
+                                <p class="account-phone" id="accountPhoneDisplay">+91 98765 43210</p>
+                            </div>
+                        </div>
+                        <div class="account-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">42</span>
+                                <span class="stat-label">Rides</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">₹3.2K</span>
+                                <span class="stat-label">Saved</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.9</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                        <div class="account-menu">
+                            <div class="menu-item" id="editProfileBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <span>Edit Profile</span>
+                                <svg class="menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                            </div>
+                            <div class="menu-item" id="privacyBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                </svg>
+                                <span>Privacy &amp; Security</span>
+                                <svg class="menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                            </div>
+                            <div class="menu-item">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                                <span>Settings</span>
+                            </div>
+                            <div class="menu-item logout">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                                <span>Log Out</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="account-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">42</span>
-                            <span class="stat-label">Rides</span>
+
+                    <!-- Edit Profile View (hidden by default) -->
+                    <div id="editProfileView" class="edit-profile-view">
+                        <div class="edit-profile-topbar">
+                            <button class="edit-back-btn" id="editProfileBackBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                <span>Back</span>
+                            </button>
+                            <h2 class="edit-profile-title">Edit Profile</h2>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-value">₹3.2K</span>
-                            <span class="stat-label">Saved</span>
+
+                        <!-- Cover Photo Upload -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label">Cover Photo</label>
+                            <div class="edit-cover-upload" id="editCoverUpload">
+                                <div class="cover-preview" id="editCoverPreview">
+                                    <div class="cover-gradient"></div>
+                                    <span class="cover-placeholder-text">Click to add a cover photo</span>
+                                </div>
+                                <input type="file" id="coverPicInput" accept="image/*" hidden />
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-value">4.9</span>
-                            <span class="stat-label">Rating</span>
+
+                        <!-- Profile Picture -->
+                        <div class="edit-avatar-section">
+                            <div class="edit-avatar-circle" id="editAvatarCircle">
+                                <span class="avatar-initials" id="editAvatarInitials">YK</span>
+                                <img class="avatar-img" id="editAvatarImg" src="" alt="Profile" />
+                                <label class="edit-avatar-overlay" for="profilePicInput">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                        <circle cx="12" cy="13" r="4"/>
+                                    </svg>
+                                </label>
+                            </div>
+                            <input type="file" id="profilePicInput" accept="image/*" hidden />
+                            <span class="edit-avatar-hint">Tap to change photo</span>
+                        </div>
+
+                        <!-- Avatar Fallback Style -->
+                        <div class="edit-field-group" id="avatarStyleGroup">
+                            <label class="edit-field-label">Avatar Style (no photo)</label>
+                            <div class="avatar-style-picker" id="avatarStylePicker">
+                                <button class="avatar-style-opt active" data-style="solid" aria-label="Solid"><span class="style-demo style-solid">YK</span><span>Solid</span></button>
+                                <button class="avatar-style-opt" data-style="gradient" aria-label="Gradient"><span class="style-demo style-gradient">YK</span><span>Gradient</span></button>
+                                <button class="avatar-style-opt" data-style="glass" aria-label="Glass"><span class="style-demo style-glass">YK</span><span>Glass</span></button>
+                            </div>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label" for="editNameInput">Display Name</label>
+                            <input type="text" class="edit-field-input" id="editNameInput" value="Yogiraj Kulkarni" maxlength="40" />
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label" for="editBioInput">Bio</label>
+                            <div class="bio-input-wrap">
+                                <textarea class="edit-field-input edit-bio-textarea" id="editBioInput" maxlength="150" rows="3" placeholder="Write something about yourself...">Exploring the world, one ride at a time 🌍</textarea>
+                                <button class="emoji-toggle-btn" id="emojiToggleBtn" type="button" aria-label="Add emoji">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                                </button>
+                                <div class="emoji-panel" id="emojiPanel">
+                                    <span class="emoji-item" data-emoji="😊">😊</span><span class="emoji-item" data-emoji="🌍">🌍</span><span class="emoji-item" data-emoji="✈️">✈️</span><span class="emoji-item" data-emoji="🚗">🚗</span><span class="emoji-item" data-emoji="🏍️">🏍️</span><span class="emoji-item" data-emoji="🛣️">🛣️</span><span class="emoji-item" data-emoji="🌄">🌄</span><span class="emoji-item" data-emoji="⭐">⭐</span><span class="emoji-item" data-emoji="🔥">🔥</span><span class="emoji-item" data-emoji="💬">💬</span><span class="emoji-item" data-emoji="🎯">🎯</span><span class="emoji-item" data-emoji="🤝">🤝</span><span class="emoji-item" data-emoji="🏠">🏠</span><span class="emoji-item" data-emoji="🌟">🌟</span><span class="emoji-item" data-emoji="👋">👋</span><span class="emoji-item" data-emoji="❤️">❤️</span><span class="emoji-item" data-emoji="🎉">🎉</span><span class="emoji-item" data-emoji="🚀">🚀</span><span class="emoji-item" data-emoji="☕">☕</span><span class="emoji-item" data-emoji="🎵">🎵</span>
+                                </div>
+                            </div>
+                            <span class="edit-char-counter" id="bioCharCounter">44/150</span>
+                        </div>
+
+                        <!-- Accent Color -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label">Accent Color</label>
+                            <div class="accent-picker" id="accentPicker">
+                                <button class="accent-swatch active" data-accent="blue" style="--swatch:rgba(100,149,237,0.9);" aria-label="Blue"></button>
+                                <button class="accent-swatch" data-accent="purple" style="--swatch:rgba(168,85,247,0.9);" aria-label="Purple"></button>
+                                <button class="accent-swatch" data-accent="emerald" style="--swatch:rgba(52,211,153,0.9);" aria-label="Emerald"></button>
+                                <button class="accent-swatch" data-accent="rose" style="--swatch:rgba(251,113,133,0.9);" aria-label="Rose"></button>
+                                <button class="accent-swatch" data-accent="amber" style="--swatch:rgba(251,191,36,0.9);" aria-label="Amber"></button>
+                                <button class="accent-swatch" data-accent="cyan" style="--swatch:rgba(34,211,238,0.9);" aria-label="Cyan"></button>
+                            </div>
+                        </div>
+
+                        <!-- UI Density -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label">UI Density</label>
+                            <div class="toggle-row">
+                                <div class="toggle-switch-group">
+                                    <button class="density-opt active" data-density="spacious" id="densitySpacious">Spacious</button>
+                                    <button class="density-opt" data-density="compact" id="densityCompact">Compact</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Animations Toggle -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label">Animations</label>
+                            <div class="toggle-row">
+                                <span class="toggle-description">Enable UI animations</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="animToggle" checked />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Live Preview Card -->
+                        <div class="edit-field-group">
+                            <label class="edit-field-label">Live Preview</label>
+                            <div class="live-preview-card" id="livePreviewCard">
+                                <div class="lp-cover" id="lpCover"><div class="cover-gradient"></div></div>
+                                <div class="lp-body">
+                                    <div class="lp-avatar" id="lpAvatar">
+                                        <span class="avatar-initials" id="lpInitials">YK</span>
+                                        <img class="avatar-img" id="lpAvatarImg" src="" alt="" />
+                                    </div>
+                                    <div class="lp-info">
+                                        <span class="lp-name" id="lpName">Yogiraj Kulkarni</span>
+                                        <span class="lp-bio" id="lpBio">Exploring the world, one ride at a time 🌍</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="edit-profile-actions">
+                            <button class="edit-action-btn secondary" id="editResetBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                                Reset
+                            </button>
+                            <button class="edit-action-btn primary" id="editSaveBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Save Changes
+                            </button>
                         </div>
                     </div>
-                    <div class="account-menu">
-                        <div class="menu-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                            <span>Edit Profile</span>
+
+                    <!-- Privacy & Security View (hidden by default) -->
+                    <div id="privacyView" class="privacy-view">
+                        <div class="edit-profile-topbar">
+                            <button class="edit-back-btn" id="privacyBackBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                <span>Back</span>
+                            </button>
+                            <h2 class="edit-profile-title">Privacy &amp; Security</h2>
                         </div>
-                        <div class="menu-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            </svg>
-                            <span>Privacy & Security</span>
+
+                        <!-- Profile Visibility -->
+                        <div class="privacy-section">
+                            <h3 class="privacy-section-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Profile Visibility
+                            </h3>
+                            <div class="privacy-card">
+                                <div class="privacy-toggle-row">
+                                    <div class="privacy-toggle-info">
+                                        <span class="privacy-toggle-label">Profile Visibility</span>
+                                        <span class="privacy-toggle-desc" id="profileVisDesc">Your profile is visible to everyone</span>
+                                    </div>
+                                    <div class="privacy-toggle-control">
+                                        <span class="privacy-status-badge public" id="profileVisBadge">Public</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="profileVisToggle" checked />
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="menu-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="3" />
-                                <path
-                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                            </svg>
-                            <span>Settings</span>
-                        </div>
-                        <div class="menu-item logout">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                <polyline points="16 17 21 12 16 7" />
-                                <line x1="21" y1="12" x2="9" y2="12" />
-                            </svg>
-                            <span>Log Out</span>
+
+                        <!-- Personal Info Visibility -->
+                        <div class="privacy-section">
+                            <h3 class="privacy-section-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                                Personal Info Visibility
+                            </h3>
+                            <div class="privacy-card">
+                                <div class="privacy-toggle-row">
+                                    <div class="privacy-toggle-info">
+                                        <span class="privacy-toggle-label">Show Email</span>
+                                        <span class="privacy-toggle-desc">Display your email on your profile</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="showEmailToggle" checked />
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="privacy-divider"></div>
+                                <div class="privacy-toggle-row">
+                                    <div class="privacy-toggle-info">
+                                        <span class="privacy-toggle-label">Show Phone Number</span>
+                                        <span class="privacy-toggle-desc">Display your phone number on your profile</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="showPhoneToggle" checked />
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -506,7 +669,10 @@
 
                             <!-- User Info (Fixed - Non-editable) -->
                             <div class="post-user-info">
-                                <div class="post-user-avatar">YK</div>
+                                <div class="post-user-avatar" id="postCreateAvatar">
+                                    <span class="avatar-initials" data-user-initials>YK</span>
+                                    <img class="avatar-img" data-user-avatar-img src="" alt="Profile" />
+                                </div>
                                 <div class="post-user-details">
                                     <span class="post-user-name">Yogiraj Kulkarni</span>
                                     <span class="post-user-handle">Posting as yourself</span>
@@ -674,7 +840,6 @@
                             <!-- Form Actions -->
                             <div class="post-form-actions">
                                 <button type="button" class="post-btn secondary" id="postCancelBtn">Cancel</button>
-                                <button type="button" class="post-btn primary" id="postPreviewBtn">Preview Post</button>
                                 <button type="button" class="post-btn primary publish" id="postDirectPublishBtn">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2">
@@ -698,10 +863,13 @@
                                     <div class="glass-overlay"></div>
                                     <header class="post-header">
                                         <div class="avatar-container">
-                                            <div class="avatar">YK</div>
+                                            <div class="avatar" id="previewPostAvatar">
+                                                <span class="avatar-initials" data-user-initials>YK</span>
+                                                <img class="avatar-img" data-user-avatar-img src="" alt="Profile" />
+                                            </div>
                                         </div>
                                         <div class="user-info">
-                                            <span class="user-name">Yogiraj Kulkarni</span>
+                                            <span class="user-name" id="previewPostName">Yogiraj Kulkarni</span>
                                         </div>
                                     </header>
                                     <div class="route-strip">
@@ -832,8 +1000,8 @@
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
-                        <p>No completed rides yet</p>
-                        <span>Complete rides from the Booked section to see them here</span>
+                        <p>No history available yet</p>
+                        <span>Your completed rides will appear here</span>
                     </div>
                 </div>
             </div>
@@ -1430,92 +1598,13 @@
                 </button>
             </div>
             <div class="fc-panel-list" id="fcPanelList">
-                <!-- Arjun Mehta -->
-                <div class="fc-chat-item" data-chat-id="arjun" data-name="Arjun Mehta" data-initials="AM"
-                    data-online="true">
-                    <div class="fc-chat-avatar">
-                        <span>AM</span>
-                        <span class="fc-online-dot"></span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Arjun Mehta</span>
-                            <span class="fc-chat-time">2m</span>
-                        </div>
-                        <p class="fc-chat-preview">See you at 9 AM tomorrow!</p>
-                    </div>
-                </div>
-                <!-- Priya Sharma -->
-                <div class="fc-chat-item" data-chat-id="priya" data-name="Priya Sharma" data-initials="PS"
-                    data-online="false">
-                    <div class="fc-chat-avatar">
-                        <span>PS</span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Priya Sharma</span>
-                            <span class="fc-chat-time">1h</span>
-                        </div>
-                        <p class="fc-chat-preview">Thanks for the ride today 🚗</p>
-                    </div>
-                </div>
-                <!-- Rohan Kapoor -->
-                <div class="fc-chat-item" data-chat-id="rohan" data-name="Rohan Kapoor" data-initials="RK"
-                    data-online="false">
-                    <div class="fc-chat-avatar">
-                        <span>RK</span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Rohan Kapoor</span>
-                            <span class="fc-chat-time">3h</span>
-                        </div>
-                        <p class="fc-chat-preview">Can we reschedule to Thursday?</p>
-                    </div>
-                </div>
-                <!-- Neha Kulkarni (unread) -->
-                <div class="fc-chat-item" data-chat-id="neha" data-name="Neha Kulkarni" data-initials="NK"
-                    data-online="true">
-                    <div class="fc-chat-avatar">
-                        <span>NK</span>
-                        <span class="fc-online-dot"></span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Neha Kulkarni</span>
-                            <span class="fc-chat-time">5h</span>
-                        </div>
-                        <p class="fc-chat-preview">I'll be waiting at the usual spot</p>
-                    </div>
-                    <span class="fc-unread-dot"></span>
-                </div>
-                <!-- Vikram Rao -->
-                <div class="fc-chat-item" data-chat-id="vikram" data-name="Vikram Rao" data-initials="VR"
-                    data-online="false">
-                    <div class="fc-chat-avatar">
-                        <span>VR</span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Vikram Rao</span>
-                            <span class="fc-chat-time">1d</span>
-                        </div>
-                        <p class="fc-chat-preview">Great driving today!</p>
-                    </div>
-                </div>
-                <!-- Ananya Singh -->
-                <div class="fc-chat-item" data-chat-id="ananya" data-name="Ananya Singh" data-initials="AS"
-                    data-online="false">
-                    <div class="fc-chat-avatar">
-                        <span>AS</span>
-                    </div>
-                    <div class="fc-chat-info">
-                        <div class="fc-chat-top">
-                            <span class="fc-chat-name">Ananya Singh</span>
-                            <span class="fc-chat-time">2d</span>
-                        </div>
-                        <p class="fc-chat-preview">Let me know when you reach</p>
-                    </div>
+                <!-- Empty state -->
+                <div class="chat-empty-state fc-empty" id="fcEmptyState">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span class="empty-title">No chats yet</span>
+                    <span class="empty-subtitle">Your conversations will appear here</span>
                 </div>
             </div>
         </div>
