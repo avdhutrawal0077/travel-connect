@@ -332,15 +332,48 @@ document.addEventListener("DOMContentLoaded", function () {
     var authModal = document.getElementById('auth-modal');
     var panelLogin = document.getElementById('panel-login');
     var panelForgot = document.getElementById('panel-forgot');
+    var panelForgotOtp = document.getElementById('panel-forgot-otp');
     var panelNewpass = document.getElementById('panel-newpass');
     var panelSignup1 = document.getElementById('panel-signup-1');
     var panelSignup2 = document.getElementById('panel-signup-2');
 
     function showPanel(panel) {
-        [panelLogin, panelForgot, panelNewpass, panelSignup1, panelSignup2].forEach(function (p) {
+        [panelLogin, panelForgot, panelForgotOtp, panelNewpass, panelSignup1, panelSignup2].forEach(function (p) {
             p.classList.remove('active');
         });
         panel.classList.add('active');
+    }
+
+    function validatePasswordPair(password, confirmPassword) {
+        if (!password || !confirmPassword) {
+            return { ok: false, error: 'Please fill in both fields' };
+        }
+        if (password !== confirmPassword) {
+            return { ok: false, error: 'Passwords do not match' };
+        }
+        return { ok: true, error: '' };
+    }
+
+    function clearFieldValues(ids) {
+        ids.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    }
+
+    function handlePasswordConfirmation(opts) {
+        var passEl = document.getElementById(opts.passwordId);
+        var confirmEl = document.getElementById(opts.confirmId);
+        var errorEl = document.getElementById(opts.errorId);
+        if (!passEl || !confirmEl || !errorEl) return;
+
+        var validation = validatePasswordPair(passEl.value, confirmEl.value);
+        errorEl.textContent = validation.error;
+        if (!validation.ok) return;
+
+        if (typeof opts.onValid === 'function') {
+            opts.onValid();
+        }
     }
 
     function openAuth(panel) {
@@ -348,6 +381,38 @@ document.addEventListener("DOMContentLoaded", function () {
         authBackdrop.classList.add('visible');
         authModal.classList.add('visible');
     }
+
+    function openLoginFromUrlFlag() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('auth') !== 'login') return;
+        openAuth(panelLogin);
+        params.delete('auth');
+        var cleanQuery = params.toString();
+        var cleanUrl = window.location.pathname + (cleanQuery ? ('?' + cleanQuery) : '') + window.location.hash;
+        window.history.replaceState({}, '', cleanUrl);
+    }
+
+    function startForgotPasswordFlow(options) {
+        var opts = options || {};
+        var fromPanel = opts.fromPanel || null;
+        var shouldAnimate = opts.animate !== false;
+
+        clearFieldValues(['forgot-email', 'forgot-otp', 'newpass-password', 'newpass-confirm']);
+        document.getElementById('newpass-error').textContent = '';
+
+        if (authModal.classList.contains('visible')) {
+            if (fromPanel && shouldAnimate) {
+                switchPanel(fromPanel, panelForgot);
+            } else {
+                showPanel(panelForgot);
+            }
+            return;
+        }
+
+        openAuth(panelForgot);
+    }
+
+    window.startForgotPasswordFlow = startForgotPasswordFlow;
 
     function closeAuth() {
         authBackdrop.classList.remove('visible');
@@ -413,48 +478,48 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Forgot password navigation ──
     document.getElementById('go-forgot').addEventListener('click', function (e) {
         e.preventDefault();
-        switchPanel(panelLogin, panelForgot);
+        startForgotPasswordFlow({ fromPanel: panelLogin, animate: true });
     });
 
-    document.getElementById('go-login-forgot').addEventListener('click', function (e) {
+    document.getElementById('go-login-forgot-email').addEventListener('click', function (e) {
         e.preventDefault();
         switchPanel(panelForgot, panelLogin);
     });
 
-    // ── OTP Verify → New Password panel ──
-    document.getElementById('forgot-verify').addEventListener('click', function (e) {
+    document.getElementById('go-login-forgot-otp').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPanel(panelForgotOtp, panelLogin);
+    });
+
+    // ── Send OTP (Email step) → OTP verify panel ──
+    document.getElementById('forgot-send-otp').addEventListener('click', function (e) {
         e.preventDefault();
         var email = document.getElementById('forgot-email').value.trim();
+        if (!email) return;
+        switchPanel(panelForgot, panelForgotOtp);
+    });
+
+    // ── OTP Verify → New Password panel ──
+    document.getElementById('forgot-verify-otp').addEventListener('click', function (e) {
+        e.preventDefault();
         var otp = document.getElementById('forgot-otp').value.trim();
-        if (!email || !otp) return;
+        if (!otp) return;
         // Frontend-only: accept any non-empty OTP
-        switchPanel(panelForgot, panelNewpass);
+        switchPanel(panelForgotOtp, panelNewpass);
     });
 
     // ── New Password → Confirm & go to Login ──
     document.getElementById('newpass-submit').addEventListener('click', function (e) {
         e.preventDefault();
-        var pass = document.getElementById('newpass-password').value;
-        var confirm = document.getElementById('newpass-confirm').value;
-        var errorEl = document.getElementById('newpass-error');
-
-        errorEl.textContent = '';
-
-        if (!pass || !confirm) {
-            errorEl.textContent = 'Please fill in both fields';
-            return;
-        }
-        if (pass !== confirm) {
-            errorEl.textContent = 'Passwords do not match';
-            return;
-        }
-
-        // Clear fields and switch to login
-        document.getElementById('newpass-password').value = '';
-        document.getElementById('newpass-confirm').value = '';
-        document.getElementById('forgot-email').value = '';
-        document.getElementById('forgot-otp').value = '';
-        switchPanel(panelNewpass, panelLogin);
+        handlePasswordConfirmation({
+            passwordId: 'newpass-password',
+            confirmId: 'newpass-confirm',
+            errorId: 'newpass-error',
+            onValid: function () {
+                clearFieldValues(['newpass-password', 'newpass-confirm', 'forgot-email', 'forgot-otp']);
+                switchPanel(panelNewpass, panelLogin);
+            },
+        });
     });
 
     document.getElementById('go-login-newpass').addEventListener('click', function (e) {
@@ -473,6 +538,8 @@ document.addEventListener("DOMContentLoaded", function () {
     authBackdrop.addEventListener('click', function () {
         closeAuth();
     });
+
+    openLoginFromUrlFlag();
 
     // ═══════════════════════════════════════════
     // POST-AUTH TRANSITION
@@ -1133,6 +1200,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // macOS "Funky" alert sound recreation using Web Audio API
     function playConfirmationSound() {
+        if (window.__appSettingsPermissions && window.__appSettingsPermissions.sounds === false) return;
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -1584,6 +1652,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Open notification panel
         function openNotificationPanel() {
+            if (window.__appSettingsPermissions && window.__appSettingsPermissions.notifications === false) return;
             if (notificationState.isPanelOpen || notificationState.isAnimating) return;
             notificationState.isAnimating = true;
             notificationState.isPanelOpen = true;
@@ -1982,6 +2051,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 150);
             });
         });
+
+        const logoutItem = document.querySelector('.menu-item.logout');
+        if (logoutItem) {
+            logoutItem.addEventListener('click', function () {
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                } catch (e) {
+                    // Ignore storage-clear errors and continue logout flow.
+                }
+
+                // Force a clean frontend state and return to Login modal.
+                window.location.href = window.location.pathname + '?auth=login';
+            });
+        }
     }
 
     // ============================================
@@ -3743,6 +3827,233 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 })();
 
+/* =========================================================
+   Account Settings Panel + Permissions
+   Adds Settings sub-view, reusable change-password entrypoint,
+   and localStorage-backed app permission toggles.
+   ========================================================= */
+(function () {
+    'use strict';
+
+    const STORAGE_KEY = 'tc_settings_permissions';
+    const DEFAULT_PERMISSIONS = {
+        notifications: true,
+        location: true,
+        sounds: true,
+    };
+
+    const mainView = document.getElementById('accountMainView');
+    const editView = document.getElementById('editProfileView');
+    const privacyView = document.getElementById('privacyView');
+    const settingsView = document.getElementById('settingsView');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsBackBtn = document.getElementById('settingsBackBtn');
+    const changePasswordBtn = document.getElementById('settingsChangePasswordBtn');
+    const settingsPasswordBackdrop = document.getElementById('settingsPasswordBackdrop');
+    const settingsPasswordCloseBtn = document.getElementById('settingsPasswordCloseBtn');
+    const settingsPasswordSteps = {
+        email: document.getElementById('settingsPasswordStepEmail'),
+        otp: document.getElementById('settingsPasswordStepOtp'),
+        confirm: document.getElementById('settingsPasswordStepConfirm'),
+    };
+    const settingsPasswordInputs = {
+        email: document.getElementById('settingsPasswordEmail'),
+        otp: document.getElementById('settingsPasswordOtp'),
+        password: document.getElementById('settingsPasswordNew'),
+        confirmPassword: document.getElementById('settingsPasswordConfirm'),
+    };
+    const settingsPasswordErrors = {
+        email: document.getElementById('settingsPasswordEmailError'),
+        otp: document.getElementById('settingsPasswordOtpError'),
+        confirm: document.getElementById('settingsPasswordConfirmError'),
+    };
+    const settingsPasswordButtons = {
+        sendOtp: document.getElementById('settingsPasswordSendOtpBtn'),
+        verifyOtp: document.getElementById('settingsPasswordVerifyOtpBtn'),
+        confirm: document.getElementById('settingsPasswordConfirmBtn'),
+    };
+
+    const notificationsToggle = document.getElementById('settingsNotificationsToggle');
+    const locationToggle = document.getElementById('settingsLocationToggle');
+    const soundsToggle = document.getElementById('settingsSoundsToggle');
+    const notificationBtn = document.querySelector('.notification-btn');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationOverlay = document.getElementById('notificationOverlay');
+
+    if (!mainView || !settingsView || !settingsBtn || !settingsBackBtn) return;
+
+    function loadPermissions() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return { ...DEFAULT_PERMISSIONS };
+            const parsed = JSON.parse(raw);
+            return { ...DEFAULT_PERMISSIONS, ...parsed };
+        } catch (err) {
+            return { ...DEFAULT_PERMISSIONS };
+        }
+    }
+
+    function savePermissions(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showSettingsView() {
+        mainView.style.display = 'none';
+        if (editView) editView.classList.remove('active');
+        if (privacyView) privacyView.classList.remove('active');
+        settingsView.classList.add('active');
+    }
+
+    function hideSettingsView() {
+        settingsView.classList.remove('active');
+        mainView.style.display = '';
+    }
+
+    function showSettingsPasswordStep(stepKey) {
+        Object.keys(settingsPasswordSteps).forEach(function (key) {
+            const stepEl = settingsPasswordSteps[key];
+            if (!stepEl) return;
+            stepEl.classList.toggle('active', key === stepKey);
+        });
+    }
+
+    function clearSettingsPasswordErrors() {
+        Object.values(settingsPasswordErrors).forEach(function (errorEl) {
+            if (errorEl) errorEl.textContent = '';
+        });
+    }
+
+    function resetSettingsPasswordFlow() {
+        Object.values(settingsPasswordInputs).forEach(function (inputEl) {
+            if (inputEl) inputEl.value = '';
+        });
+        clearSettingsPasswordErrors();
+        showSettingsPasswordStep('email');
+    }
+
+    function openSettingsPasswordModal() {
+        if (!settingsPasswordBackdrop) return;
+        resetSettingsPasswordFlow();
+        settingsPasswordBackdrop.classList.add('visible');
+    }
+
+    function closeSettingsPasswordModal() {
+        if (!settingsPasswordBackdrop) return;
+        settingsPasswordBackdrop.classList.remove('visible');
+        resetSettingsPasswordFlow();
+    }
+
+    function applyPermissions(state) {
+        window.__appSettingsPermissions = state;
+
+        if (notificationsToggle) notificationsToggle.checked = !!state.notifications;
+        if (locationToggle) locationToggle.checked = !!state.location;
+        if (soundsToggle) soundsToggle.checked = !!state.sounds;
+
+        document.body.classList.toggle('notifications-disabled', !state.notifications);
+        document.body.dataset.locationAccess = state.location ? 'enabled' : 'disabled';
+
+        if (notificationBtn) {
+            notificationBtn.style.display = state.notifications ? '' : 'none';
+        }
+
+        if (!state.notifications && notificationPanel && notificationOverlay) {
+            notificationPanel.classList.remove('active');
+            notificationOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    let permissionsState = loadPermissions();
+    applyPermissions(permissionsState);
+
+    function updatePermission(key, value) {
+        permissionsState = { ...permissionsState, [key]: value };
+        savePermissions(permissionsState);
+        applyPermissions(permissionsState);
+    }
+
+    settingsBtn.addEventListener('click', showSettingsView);
+    settingsBackBtn.addEventListener('click', hideSettingsView);
+
+    if (changePasswordBtn && settingsPasswordBackdrop) {
+        changePasswordBtn.addEventListener('click', openSettingsPasswordModal);
+    }
+
+    if (settingsPasswordCloseBtn) {
+        settingsPasswordCloseBtn.addEventListener('click', closeSettingsPasswordModal);
+    }
+
+    if (settingsPasswordBackdrop) {
+        settingsPasswordBackdrop.addEventListener('click', function (event) {
+            if (event.target === settingsPasswordBackdrop) {
+                closeSettingsPasswordModal();
+            }
+        });
+    }
+
+    if (settingsPasswordButtons.sendOtp) {
+        settingsPasswordButtons.sendOtp.addEventListener('click', function () {
+            const emailValue = settingsPasswordInputs.email ? settingsPasswordInputs.email.value.trim() : '';
+            if (!emailValue) {
+                if (settingsPasswordErrors.email) settingsPasswordErrors.email.textContent = 'Please enter your email';
+                return;
+            }
+            if (settingsPasswordErrors.email) settingsPasswordErrors.email.textContent = '';
+            showSettingsPasswordStep('otp');
+        });
+    }
+
+    if (settingsPasswordButtons.verifyOtp) {
+        settingsPasswordButtons.verifyOtp.addEventListener('click', function () {
+            const otpValue = settingsPasswordInputs.otp ? settingsPasswordInputs.otp.value.trim() : '';
+            if (!otpValue) {
+                if (settingsPasswordErrors.otp) settingsPasswordErrors.otp.textContent = 'Please enter OTP';
+                return;
+            }
+            if (settingsPasswordErrors.otp) settingsPasswordErrors.otp.textContent = '';
+            showSettingsPasswordStep('confirm');
+        });
+    }
+
+    if (settingsPasswordButtons.confirm) {
+        settingsPasswordButtons.confirm.addEventListener('click', function () {
+            const passwordValue = settingsPasswordInputs.password ? settingsPasswordInputs.password.value : '';
+            const confirmValue = settingsPasswordInputs.confirmPassword ? settingsPasswordInputs.confirmPassword.value : '';
+
+            if (!passwordValue || !confirmValue) {
+                if (settingsPasswordErrors.confirm) settingsPasswordErrors.confirm.textContent = 'Please fill in both password fields';
+                return;
+            }
+            if (passwordValue !== confirmValue) {
+                if (settingsPasswordErrors.confirm) settingsPasswordErrors.confirm.textContent = 'Passwords do not match';
+                return;
+            }
+
+            if (settingsPasswordErrors.confirm) settingsPasswordErrors.confirm.textContent = '';
+            window.location.href = window.location.pathname + '?auth=login';
+        });
+    }
+
+    if (notificationsToggle) {
+        notificationsToggle.addEventListener('change', function () {
+            updatePermission('notifications', this.checked);
+        });
+    }
+
+    if (locationToggle) {
+        locationToggle.addEventListener('change', function () {
+            updatePermission('location', this.checked);
+        });
+    }
+
+    if (soundsToggle) {
+        soundsToggle.addEventListener('change', function () {
+            updatePermission('sounds', this.checked);
+        });
+    }
+})();
+
 // ============================================
 // FLOATING CHAT SYSTEM — ChatManager
 // ============================================
@@ -4417,10 +4728,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 a.style.borderColor = colors.border;
             });
         }
-
-        // Update stat bar accent
-        const statBar = document.querySelector('.account-stats');
-        if (statBar) statBar.style.borderColor = colors.border.replace('0.4', '0.15');
 
         // Update sidebar active glow
         const activeNav = document.querySelector('.sidebar-nav-item.active');
